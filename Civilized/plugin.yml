@@ -1,0 +1,14 @@
+name: Civilized
+main: com.drewgifford.civilized.Civilized
+version: 2
+description: Cities, nations, and war (maybe!)
+author: Toadally
+depend: [Vault]
+api-version: 1.17
+commands:
+  civ:
+    description: Main command for Civilized.
+    aliases: [civs, civilized, civilization]
+  city:
+    description: Main command for Civilized cities.
+    aliases: [town, t, c]
