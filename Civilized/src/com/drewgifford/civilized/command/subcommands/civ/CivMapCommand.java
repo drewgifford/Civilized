@@ -26,12 +26,28 @@ public class CivMapCommand extends CivilizedSubcommand {
 			return false;
 		}
 		Player p = (Player) sender;
-		CivilizedPlayer cp = CivilizedPlayer.getCivilizedPlayer(p);
 		
+		if (args.length > 0) {
+			if (args[0].equalsIgnoreCase("on")) {
+				p.sendMessage(ChatColor.GREEN + "Automatic map updates enabled. Type /civ map off to disable.");
+				Civilized.activeMaps.add(p.getUniqueId());
+			}
+			if (args[0].equalsIgnoreCase("off")) {
+				p.sendMessage(ChatColor.RED + "Automatic map updates disabled. Type /civ map on to enable.");
+				Civilized.activeMaps.remove(p.getUniqueId());
+			}
+		}
 		
+		sendMapUpdate(p);
+		
+		return false;
+	}
+	
+	public static void sendMapUpdate(Player p) {
 		int radius = 10;
 		World world = p.getWorld();
 		Chunk chunk = p.getLocation().getChunk();
+		CivilizedPlayer cp = CivilizedPlayer.getCivilizedPlayer(p);
 		
 		String topBorder = "";
 		for(int x = -radius; x < radius + 1; x++) {
@@ -82,12 +98,6 @@ public class CivMapCommand extends CivilizedSubcommand {
 		}
 		
 		p.sendMessage(ChatColor.GRAY + topBorder);
-		
-		
-		
-		
-		
-		return false;
 	}
 
 }

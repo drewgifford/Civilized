@@ -56,6 +56,11 @@ public class CityClaimCommand extends CivilizedSubcommand{
 		
 		Chunk chunk = location.getChunk();
 		
+		if (!city.isChunkAdjacent(chunk) && city.getChunks().size() > 0) {
+			p.sendMessage(ChatColor.RED + "New claims must be adjacent to existing ones.");
+			return false;
+		}
+		
 		city.addChunk(chunk);
 		
 		p.sendMessage(ChatColor.GREEN + "Your town has claimed the chunk at [" + chunk.getX() + ", " + chunk.getZ() + "]");

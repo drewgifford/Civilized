@@ -10,11 +10,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.player.CivilizedPlayer;
 
-public class JoinListener implements Listener {
+public class PlayerJoinListener implements Listener {
 	
 	Civilized pl;
 	
-	public JoinListener(Civilized pl) {
+	public PlayerJoinListener(Civilized pl) {
 		this.pl = pl;
 	}
 	

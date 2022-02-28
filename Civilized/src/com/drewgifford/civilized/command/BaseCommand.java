@@ -42,7 +42,6 @@ public class BaseCommand implements CommandExecutor {
 		}
 		
 		for (CivilizedSubcommand subcommand : this.subcommands) {
-			System.out.println(sub + ": " + subcommand.getLabel().toString() + " " + subcommand.getAliases());
 			if (subcommand.hasLabel(sub)) {
 				return subcommand.run(sender, subcommandArgs);
 			}

@@ -2,6 +2,7 @@ package com.drewgifford.civilized;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -12,7 +13,7 @@ import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.CityCommand;
 import com.drewgifford.civilized.command.CivCommand;
 import com.drewgifford.civilized.event.InventoryClickListener;
-import com.drewgifford.civilized.event.JoinListener;
+import com.drewgifford.civilized.event.PlayerJoinListener;
 import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.requests.CityInvite;
 
@@ -25,6 +26,8 @@ public class Civilized extends JavaPlugin {
 	public static List<CivilizedPlayer> registeredPlayers = new ArrayList<CivilizedPlayer>();
 	
 	public static List<CityInvite> cityInvites = new ArrayList<CityInvite>();
+	
+	public static List<UUID> activeMaps = new ArrayList<UUID>();
 	
 	private Economy econ;
 	
@@ -41,7 +44,7 @@ public class Civilized extends JavaPlugin {
 		
 		PluginManager pm = Bukkit.getServer().getPluginManager();
 		
-		pm.registerEvents(new JoinListener(this), this);
+		pm.registerEvents(new PlayerJoinListener(this), this);
 		pm.registerEvents(new InventoryClickListener(this), this);
 		
 	}

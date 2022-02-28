@@ -51,6 +51,12 @@ public class CityUnclaimCommand extends CivilizedSubcommand {
 		}
 		
 		Chunk chunk = location.getChunk();
+		
+		if (city.willChunkDisconnect(chunk) && city.getChunks().size() > 0) {
+			p.sendMessage(ChatColor.RED + "Unclaiming that chunk would make your city disconnected.");
+			return false;
+		}
+		
 		city.removeChunk(chunk);
 		
 		p.sendMessage(ChatColor.GREEN + "Your town has unclaimed the chunk at [" + chunk.getX() + ", " + chunk.getZ() + "]");
