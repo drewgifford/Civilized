@@ -13,8 +13,10 @@ import com.drewgifford.civilized.command.subcommands.city.CityInviteCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityJoinCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityLeaveCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityNameCommand;
+import com.drewgifford.civilized.command.subcommands.city.CityPermissionsCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityPromoteCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityShopCommand;
+import com.drewgifford.civilized.command.subcommands.city.CityTogglesCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityUnclaimCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityCreateCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityDemoteCommand;
@@ -72,8 +74,17 @@ public static void registerCommands(Civilized pl) {
 		subcommands.add(
 				new CityPromoteCommand(pl, "promote", new String[] {"officer", "rankup"}, "", "Promotes a city member to Officer.")
 		);
+		
 		subcommands.add(
 				new CityDemoteCommand(pl, "demote", new String[] {"derank", "rankdown"}, "", "Demotes a city Officer.")
+		);
+		
+		subcommands.add(
+				new CityPermissionsCommand(pl, "permission", new String[] {"perm"}, "", "Manages city permissions.")
+		);
+		
+		subcommands.add(
+				new CityTogglesCommand(pl, "toggle", new String[] {"switch", "options"}, "", "Manages city toggles.")
 		);
 		
 		pl.getCommand("city").setExecutor(new BaseCommand(pl, subcommands, cityInfoCommand));

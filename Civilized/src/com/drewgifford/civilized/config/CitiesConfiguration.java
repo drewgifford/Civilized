@@ -19,7 +19,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
+import com.drewgifford.civilized.permissions.CivilizedPermissions;
+import com.drewgifford.civilized.permissions.CivilizedToggles;
+import com.drewgifford.civilized.permissions.PermissionLevel;
 import com.drewgifford.civilized.player.CivilizedPlayer;
+import com.drewgifford.civilized.plot.Plot;
 
 public class CitiesConfiguration {
 	
@@ -84,8 +88,29 @@ public class CitiesConfiguration {
 				List<UUID> officers = stringsToUniqueIds((List<String>) cityYml.get("officers"));
 				List<UUID> players = stringsToUniqueIds((List<String>) cityYml.get("players"));
 				
-				List<Chunk> chunks = chunkStringsToChunkList((List<String>) cityYml.get("chunks"));
 				Chunk homeChunk = stringToChunk((String) cityYml.get("homeChunk"));
+				
+				// Loop through chunks and get plot data
+				List<Map<?, ?>> chunkData = (List<Map<?, ?>>) cityYml.get("chunks");
+				
+				Map<Chunk, Plot> chunksWithPlots = new HashMap<Chunk, Plot>();
+				
+				for(Map<?, ?> chunkYml : chunkData) {
+					
+					World w = Bukkit.getWorld((String) chunkYml.get("world"));
+					int x = (int) chunkYml.get("x");
+					int z = (int) chunkYml.get("z");
+					
+					Chunk c = w.getChunkAt(x, z);
+					
+					Plot p = Plot.fromMap((Map<?, ?>) chunkYml.get("plot"), c);
+					
+					chunksWithPlots.put(c, p);
+					
+				}
+				
+				CivilizedPermissions permissions = CivilizedPermissions.fromMap((Map<?,?>) cityYml.get("permissions"));
+				CivilizedToggles toggles = CivilizedToggles.fromMap((Map<?,?>) cityYml.get("toggles"));
 				
 				int playerSlots = (int) cityYml.get("playerSlots");
 				int maxClaimChunks = (int) cityYml.get("maxClaimChunks");
@@ -96,13 +121,16 @@ public class CitiesConfiguration {
 				
 				city.setOfficers(officers);
 				city.setPlayers(players);
-				city.setChunks(chunks);
+				city.setChunks(chunksWithPlots);
 				city.setHomeChunk(homeChunk);
 				city.setBoard(board);
 				
 				city.setPlayerSlots(playerSlots);
 				city.setMaxClaimChunks(maxClaimChunks);
 				city.setBalance(balance);
+				
+				city.setPermissions(permissions);
+				city.setToggles(toggles);
 				
 				Civilized.cities.add(city);
 				
@@ -139,13 +167,37 @@ public class CitiesConfiguration {
 			cityYml.put("officers", uniqueIdsToStrings(city.getOfficers()));
 			cityYml.put("players", uniqueIdsToStrings(city.getPlayers()));
 			
-			cityYml.put("chunks", chunksToStringList(city.getChunks()));
+			List<Map<?, ?>> chunks = new ArrayList<Map<?, ?>>();
+			
+			for (Chunk chunk : city.getChunkPlotMap().keySet()) {
+				Plot plot = city.getChunkPlotMap().get(chunk);
+				
+				Map<String, Object> map = new HashMap<String, Object>();
+				
+				map.put("world", chunk.getWorld().getName());
+				map.put("x", chunk.getX());
+				map.put("z", chunk.getZ());
+				
+				map.put("plot", plot.toMap());
+				
+				chunks.add(map);
+				
+			}
+			
+			cityYml.put("chunks", chunks);
 			cityYml.put("homeChunk", chunkToString(city.getHomeChunk()));
+			
+			cityYml.put("permissions", city.getPermissions().toMap());
+			cityYml.put("toggles", city.getToggles().toMap());
 			
 			cityYml.put("playerSlots", city.getPlayerSlots());
 			cityYml.put("maxClaimChunks", city.getMaxClaimChunks());
 			
 			cityYml.put("balance", city.getBalance());
+			
+			
+			
+			// Loop through chunks and get plot data
 			
 			cityData.add(cityYml);
 		}
@@ -155,14 +207,15 @@ public class CitiesConfiguration {
 		
 	}
 	
-	private List<UUID> stringsToUniqueIds(List<String> strings){
+	
+	public static List<UUID> stringsToUniqueIds(List<String> strings){
 		List<UUID> uuids = new ArrayList<UUID>();
 		for(String s : strings) {
 			uuids.add(UUID.fromString(s));
 		}
 		return uuids;
 	}
-	private List<String> uniqueIdsToStrings(List<UUID> uuids){
+	public static List<String> uniqueIdsToStrings(List<UUID> uuids){
 		List<String> strings = new ArrayList<String>();
 		for(UUID u : uuids) {
 			strings.add(u.toString());

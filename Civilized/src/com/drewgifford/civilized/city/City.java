@@ -1,7 +1,9 @@
 package com.drewgifford.civilized.city;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Chunk;
@@ -9,6 +11,10 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 import com.drewgifford.civilized.nation.Nation;
+import com.drewgifford.civilized.permissions.CivilizedPermissions;
+import com.drewgifford.civilized.permissions.CivilizedToggles;
+import com.drewgifford.civilized.permissions.PermissionLevel;
+import com.drewgifford.civilized.plot.Plot;
 import com.drewgifford.civilized.util.ChunkCoordinates;
 
 public class City {
@@ -19,13 +25,16 @@ public class City {
 	private String name;
 	private String board;
 	
-	private List<Chunk> chunks;
+	private Map<Chunk, Plot> chunks;
 	private Chunk homeChunk;
 	private Nation nation;
 	private int playerSlots;
 	
 	private double balance;
 	private int maxClaimChunks;
+	
+	private CivilizedPermissions permissions;
+	private CivilizedToggles toggles;
 	
 	
 	public City(UUID owner, String name) {
@@ -35,10 +44,10 @@ public class City {
 		this.officers = new ArrayList<UUID>();
 		
 		
-		this.addPlayer(owner);
+		this.players.add(owner);
 		this.addOfficer(owner);
 		
-		this.chunks = new ArrayList<Chunk>();
+		this.chunks = new HashMap<Chunk, Plot>();
 		
 		this.nation = null;
 		this.balance = 0;
@@ -46,6 +55,16 @@ public class City {
 		this.playerSlots = 3;
 		this.maxClaimChunks = 4;
 		this.board = "Change this with /city board <message>";
+		
+		this.permissions = new CivilizedPermissions(PermissionLevel.MEMBER);
+		this.toggles = new CivilizedToggles();
+	}
+	
+	public Nation getNation() {
+		return this.nation;
+	}
+	public void setNation(Nation nation) {
+		this.nation = nation;
 	}
 	
 	public UUID getOwner() {
@@ -60,7 +79,10 @@ public class City {
 	}
 	
 	public List<Chunk> getChunks(){
-		return this.chunks;
+		return new ArrayList<Chunk>(this.chunks.keySet());
+	}
+	public List<Plot> getPlots(){
+		return new ArrayList<Plot>(this.chunks.values());
 	}
 	
 	public int getPlayerSlots() {
@@ -80,7 +102,7 @@ public class City {
 	
 	
 	public boolean locationInTown(Location loc) {
-		for (Chunk coords : chunks) {
+		for (Chunk coords : chunks.keySet()) {
 			if (loc.getChunk().equals(coords)) return true;
 		}
 		return false;
@@ -142,11 +164,14 @@ public class City {
 	}
 	
 	public boolean hasChunk(Chunk chunk) {
-		return this.chunks.contains(chunk);
+		return this.chunks.keySet().contains(chunk);
 	}
 	
 	public void addChunk(Chunk chunk) {
-		this.chunks.add(chunk);
+		this.chunks.put(chunk, new Plot(chunk));
+	}
+	public void addChunk(Chunk chunk, Plot plot) {
+		this.chunks.put(chunk, plot);
 	}
 	
 	public void removeChunk(Chunk chunk) {
@@ -156,6 +181,20 @@ public class City {
 	public boolean hasOfficerPermission(UUID uuid) {
 		System.out.println(officers);
 		return (this.officers.contains(uuid) || this.owner.equals(uuid));
+	}
+	
+	public CivilizedPermissions getPermissions() {
+		return this.permissions;
+	}
+	public void setPermissions(CivilizedPermissions permissions) {
+		this.permissions = permissions;
+	}
+	
+	public CivilizedToggles getToggles() {
+		return this.toggles;
+	}
+	public void setToggles(CivilizedToggles toggles) {
+		this.toggles = toggles;
 	}
 	
 	public boolean isChunkNearby(Chunk chunk) {
@@ -260,7 +299,7 @@ public class City {
 		this.name = name;
 	}
 
-	public void setChunks(List<Chunk> chunks) {
+	public void setChunks(Map<Chunk, Plot> chunks) {
 		this.chunks = chunks;
 	}
 
@@ -270,6 +309,10 @@ public class City {
 
 	public void setOfficers(List<UUID> officers) {
 		this.officers = officers;
+	}
+	
+	public Map<Chunk, Plot> getChunkPlotMap(){
+		return this.chunks;
 	}
 
 }

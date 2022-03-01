@@ -1,5 +1,7 @@
 package com.drewgifford.civilized.player;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -8,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
+import com.drewgifford.civilized.plot.Plot;
 
 public class CivilizedPlayer {
 	
@@ -39,6 +42,18 @@ public class CivilizedPlayer {
 			}
 		}
 		return null;
+	}
+	
+	public List<Plot> getPlots(){
+		
+		List<Plot> plots = new ArrayList<Plot>();
+		
+		for (City city : Civilized.cities) {
+			for(Plot plot : city.getPlots()) {
+				if (this.p.equals(plot.getOwner())) plots.add(plot);
+			}
+		}
+		return plots;
 	}
 	
 	public UUID getUniqueId() {
