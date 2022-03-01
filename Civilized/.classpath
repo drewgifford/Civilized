@@ -6,7 +6,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/Users/Drew/Documents/1.17 Test Server/plugins/Vault (1).jar"/>
-	<classpathentry kind="lib" path="C:/Users/Drew/Documents/1.17 Test Server/spigot-1.17.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Legos/Documents/1.17 Test Server/plugins/Vault (1).jar"/>
+	<classpathentry kind="lib" path="C:/Users/Legos/Documents/1.17 Test Server/spigot-1.17.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
