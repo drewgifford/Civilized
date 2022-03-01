@@ -27,25 +27,37 @@ public class CityClaimCommand extends CivilizedSubcommand{
 			return false;
 		}
 		Player p = (Player) sender;
-		CivilizedPlayer cp = CivilizedPlayer.getCivilizedPlayer(p);
 		
-		if (cp.getCity() == null) {
+		CivilizedPlayer cp = CivilizedPlayer.getCivilizedPlayer(p);
+		City city = cp.getCity();
+		
+		if (city == null) {
 			p.sendMessage(ChatColor.RED + "You are not a member of any city.");
 			return false;
 		}
 		
+		if(attemptClaim(p, city)) {
+			Chunk chunk = p.getLocation().getChunk();
+			p.sendMessage(ChatColor.GREEN + "Your town has claimed the chunk at [" + chunk.getX() + ", " + chunk.getZ() + "]");
+		}
+		
+		
+		return false;
+	}
+	
+	public static boolean attemptClaim(Player p, City city) {
+		
 		//TODO: Check if member has permissions to claim
 		
 		Location location = p.getLocation();
-		City city = cp.getCity();
-		
-		if (!city.hasOfficerPermission(p.getUniqueId())) {
-			p.sendMessage(ChatColor.RED + "You do not have permission within the city to do that.");
-			return false;
-		}
 		
 		if (city.getChunks().size() >= city.getMaxClaimChunks()) {
 			p.sendMessage(ChatColor.RED + "Your city has reached the maximum allowed claim chunks.");
+			return false;
+		}
+		
+		if (!city.hasOfficerPermission(p.getUniqueId())) {
+			p.sendMessage(ChatColor.RED + "You do not have permission within the city to do that.");
 			return false;
 		}
 		
@@ -61,14 +73,22 @@ public class CityClaimCommand extends CivilizedSubcommand{
 			return false;
 		}
 		
+		int minDistance = 3;
+		for (City c : Civilized.cities) {
+			if (c.equals(city)) continue;
+			if (c.hasChunk(chunk)) {
+				p.sendMessage(ChatColor.RED + "A city already owns this chunk.");
+				return false;
+			}
+			if (c.isChunkNearby(chunk, minDistance)) {
+				p.sendMessage(ChatColor.RED + "New claims must be at least "+minDistance + " chunks away from another town.");
+				return false;
+			}
+		}
+		
 		city.addChunk(chunk);
 		
-		p.sendMessage(ChatColor.GREEN + "Your town has claimed the chunk at [" + chunk.getX() + ", " + chunk.getZ() + "]");
-		
-		
-		
-		
-		return false;
+		return true;
 	}
 	
 	

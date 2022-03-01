@@ -24,21 +24,21 @@ public class CivilizedPlayer {
 		return registerCivilizedPlayer(offlinePlayer);
 	}
 	
-	private City city;
 	private UUID p;
 	
 	public CivilizedPlayer(UUID p) {
 		this.p = p;
-		this.city = null;
-	}
-	
-	public CivilizedPlayer(UUID p, City city) {
-		this.p = p;
-		this.city = city;
+
 	}
 	
 	public City getCity() {
-		return this.city;
+		for (City city : Civilized.cities) {
+			
+			if (city.getPlayers().contains(p)) {
+				return city;
+			}
+		}
+		return null;
 	}
 	
 	public UUID getUniqueId() {
@@ -47,10 +47,6 @@ public class CivilizedPlayer {
 	
 	public Player getPlayer() {
 		return Bukkit.getPlayer(this.getUniqueId());
-	}
-	
-	public void setCity(City city) {
-		this.city = city;
 	}
 
 }

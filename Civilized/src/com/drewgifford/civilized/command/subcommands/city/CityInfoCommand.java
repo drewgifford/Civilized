@@ -1,6 +1,7 @@
 package com.drewgifford.civilized.command.subcommands.city;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -81,17 +82,29 @@ public class CityInfoCommand extends CivilizedSubcommand {
 		String balance = this.pl.getEconomy().format(city.getBalance());
 		
 		List<String> memberNames = new ArrayList<String>();
+		List<String> officerNames = new ArrayList<String>();
 		
 		for (UUID member : city.getPlayers()) {
 			String memberName = Bukkit.getOfflinePlayer(member).getName();
 			memberNames.add(memberName);
+			
+			if (city.getOfficers().contains(member)) {
+				officerNames.add(memberName);
+			}
 		}
+		
+		Collections.sort(memberNames);
+		Collections.sort(officerNames);
+		
+		String board = city.getBoard();
 		
 		
 		// TODO: Change to language file
+		p.sendMessage(ChatColor.GRAY + board);
 		p.sendMessage(ChatColor.AQUA + "Owner: " + ChatColor.DARK_AQUA + ownerName);
 		p.sendMessage(ChatColor.AQUA + "Balance: " + ChatColor.DARK_AQUA + balance);
-		p.sendMessage(ChatColor.AQUA + "Chunks: " + ChatColor.DARK_AQUA + "(" + city.getChunks().size() + "/" + city.getMaxClaimChunks() + ")");
+		p.sendMessage(ChatColor.AQUA + "Chunks: " + ChatColor.DARK_AQUA  + city.getChunks().size() + " of " + city.getMaxClaimChunks());
+		p.sendMessage(ChatColor.AQUA + "Officers (" + officerNames.size() + "): " + ChatColor.DARK_AQUA + String.join(", ", officerNames));
 		p.sendMessage(ChatColor.AQUA + "Members (" + memberNames.size() + "/" + city.getPlayerSlots() + "): " + ChatColor.DARK_AQUA + String.join(", ", memberNames));
 	}
 

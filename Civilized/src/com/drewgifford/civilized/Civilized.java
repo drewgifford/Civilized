@@ -8,12 +8,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.CityCommand;
 import com.drewgifford.civilized.command.CivCommand;
+import com.drewgifford.civilized.config.CitiesConfiguration;
 import com.drewgifford.civilized.event.InventoryClickListener;
 import com.drewgifford.civilized.event.PlayerJoinListener;
+import com.drewgifford.civilized.event.PlayerMoveListener;
+import com.drewgifford.civilized.event.WorldSaveListener;
 import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.requests.CityInvite;
 
@@ -31,6 +35,9 @@ public class Civilized extends JavaPlugin {
 	
 	private Economy econ;
 	
+	public CitiesConfiguration citiesConfiguration;
+	
+	@SuppressWarnings("deprecation")
 	public void onEnable() {
 		
 		if (!setupEconomy()) {
@@ -39,6 +46,8 @@ public class Civilized extends JavaPlugin {
             return;
         }
 		
+		citiesConfiguration = new CitiesConfiguration(this).load();
+		
 		CivCommand.registerCommands(this);
 		CityCommand.registerCommands(this);
 		
@@ -46,11 +55,13 @@ public class Civilized extends JavaPlugin {
 		
 		pm.registerEvents(new PlayerJoinListener(this), this);
 		pm.registerEvents(new InventoryClickListener(this), this);
+		pm.registerEvents(new PlayerMoveListener(this), this);
+		pm.registerEvents(new WorldSaveListener(this), this);
 		
 	}
 	
 	public void onDisable() {
-		
+		citiesConfiguration.write();
 	}
 	
 	private boolean setupEconomy() {

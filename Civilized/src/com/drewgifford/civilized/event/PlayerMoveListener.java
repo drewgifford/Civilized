@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,12 +14,14 @@ import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.subcommands.civ.CivMapCommand;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class PlayerMoveListener implements Listener {
 	
 	private Civilized pl;
 	
-	private HashMap<UUID, Chunk> lastChunks;
-	private HashMap<UUID, City> lastCity;
+	private HashMap<UUID, Chunk> lastChunks = new HashMap<UUID, Chunk>();
+	private HashMap<UUID, City> lastCities = new HashMap<UUID, City>();
 	
 	public PlayerMoveListener(Civilized pl) {
 		this.pl = pl;
@@ -37,7 +40,7 @@ public class PlayerMoveListener implements Listener {
 			// Player entered a new chunk
 			lastChunks.put(uuid, chunk);
 			
-			changeChunk(p);
+			changeChunk(p, e.getTo());
 			
 			
 			// Check if the player entered a city
@@ -53,21 +56,32 @@ public class PlayerMoveListener implements Listener {
 				}
 			}
 			
-			if (lastCity.get(uuid) != currentCity) {
-				if(currentCity == null) {
-					lastCity.remove(uuid);
-				} else { 
-					lastCity.put(uuid, currentCity);
-				}
+			if (lastCities.get(uuid) != currentCity) {
+				lastCities.put(uuid, currentCity);
+				
+				changeCity(p, currentCity);
 			}
 		}
 		
 	}
 	
-	private void changeChunk(Player p) {
+	private void changeChunk(Player p, Location loc) {
 		if (Civilized.activeMaps.contains(p.getUniqueId())) {
-			CivMapCommand.sendMapUpdate(p);
+			CivMapCommand.sendMapUpdate(p, loc);
 		}
+	}
+	
+	private void changeCity(Player p, City city) {
+		
+		String name = city == null ? (ChatColor.DARK_GREEN + "Wilderness") : (ChatColor.GREEN + city.getNameWithSpaces());
+		System.out.println("Changed city");
+		p.sendTitle(
+			ChatColor.WHITE + "",
+			name,
+			5,
+			20,
+			5
+		);
 	}
 
 }

@@ -102,19 +102,32 @@ public class CityInvite {
 	}
 	
 	public void accept() {
-		if (getSender().isOnline()) {
-			Player senderOnline = this.getSender().getPlayer();
-			senderOnline.sendMessage(ChatColor.AQUA + getTarget().getName() + ChatColor.GREEN + " has accepted your invite to join " + ChatColor.AQUA + city.getNameWithSpaces() + ChatColor.GREEN + "!");
+		
+		boolean canJoin = this.city.addPlayer(this.getTargetUniqueId());
+		
+		if (!canJoin) {
+			
+			if (getSender().isOnline()) {
+				Player senderOnline = this.getSender().getPlayer();
+				senderOnline.sendMessage(ChatColor.AQUA + getTarget().getName() + ChatColor.RED + " could not accept your invite, there are not enough player slots open.");
+			}
+			
+			if (getTarget().isOnline()) {
+				Player targetOnline = this.getTarget().getPlayer();
+				targetOnline.sendMessage(ChatColor.RED + "There are not enough player slots in " + ChatColor.AQUA + city.getNameWithSpaces() + ChatColor.RED + " to join.");
+			}
+			
+		} else {
+			if (getSender().isOnline()) {
+				Player senderOnline = this.getSender().getPlayer();
+				senderOnline.sendMessage(ChatColor.AQUA + getTarget().getName() + ChatColor.GREEN + " has accepted your invite to join " + ChatColor.AQUA + city.getNameWithSpaces() + ChatColor.GREEN + "!");
+			}
+			
+			if (getTarget().isOnline()) {
+				Player targetOnline = this.getTarget().getPlayer();
+				targetOnline.sendMessage(ChatColor.GREEN + "You accepted " + ChatColor.AQUA + getSender().getName() + ChatColor.GREEN + "'s invite to join " + ChatColor.AQUA + city.getNameWithSpaces() + ChatColor.GREEN + "!");
+			}
 		}
-		
-		if (getTarget().isOnline()) {
-			Player targetOnline = this.getTarget().getPlayer();
-			targetOnline.sendMessage(ChatColor.GREEN + "You accepted " + ChatColor.AQUA + getSender().getName() + ChatColor.GREEN + "'s invite to join " + ChatColor.AQUA + city.getNameWithSpaces() + ChatColor.GREEN + "!");
-		}
-		
-		CivilizedPlayer cp = CivilizedPlayer.getCivilizedPlayer(getTarget());
-		
-		cp.setCity(city);
 		
 		this.cancelInvite();
 	}

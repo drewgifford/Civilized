@@ -59,6 +59,11 @@ public class CityInviteCommand extends CivilizedSubcommand {
 			return false;
 		}
 		
+		if (city.getPlayers().size() >= city.getPlayerSlots()) {
+			p.sendMessage(ChatColor.RED + "There are not enough player slots to invite more players. Consider buying more with /city shop");
+			return false;
+		}
+		
 		CivilizedPlayer targetCp = CivilizedPlayer.getCivilizedPlayer(target);
 		
 		if(targetCp.getCity() != null) {

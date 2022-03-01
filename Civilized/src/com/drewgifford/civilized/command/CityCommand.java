@@ -5,14 +5,19 @@ import java.util.List;
 
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.command.subcommands.HelpCommand;
+import com.drewgifford.civilized.command.subcommands.city.CityBoardCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityClaimCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityDenyCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityInfoCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityInviteCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityJoinCommand;
+import com.drewgifford.civilized.command.subcommands.city.CityLeaveCommand;
+import com.drewgifford.civilized.command.subcommands.city.CityNameCommand;
+import com.drewgifford.civilized.command.subcommands.city.CityPromoteCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityShopCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityUnclaimCommand;
-import com.drewgifford.civilized.command.subcommands.city.CreateCityCommand;
+import com.drewgifford.civilized.command.subcommands.city.CityCreateCommand;
+import com.drewgifford.civilized.command.subcommands.city.CityDemoteCommand;
 
 public class CityCommand {
 
@@ -28,10 +33,14 @@ public static void registerCommands(Civilized pl) {
 		subcommands.add(cityInfoCommand);
 		
 		subcommands.add(
-				new CreateCityCommand(pl, "create", new String[] {"found", "new"}, "", "Creates a new city.")
+				new CityCreateCommand(pl, "create", new String[] {"found", "new"}, "", "Creates a new city.")
 		);
 		subcommands.add(
 				new CityInviteCommand(pl, "invite", new String[] {"add"}, "", "Invites a player to your city.")
+		);
+		
+		subcommands.add(
+				new CityLeaveCommand(pl, "leave", new String[] {"exit", "quit"}, "", "Leaves a city.")
 		);
 		
 		subcommands.add(
@@ -52,6 +61,19 @@ public static void registerCommands(Civilized pl) {
 		
 		subcommands.add(
 				new CityShopCommand(pl, "shop", new String[] {"store", "market", "upgrades", "boosts", "menu", "gui"}, "", "Opens your city's upgrades shop.")
+		);
+		subcommands.add(
+				new CityBoardCommand(pl, "board", new String[] {"description", "desc", "motd", "message", "setboard"}, "", "Sets your city's board message.")
+		);
+		subcommands.add(
+				new CityNameCommand(pl, "name", new String[] {"rename"}, "", "Sets your city's name.")
+		);
+		
+		subcommands.add(
+				new CityPromoteCommand(pl, "promote", new String[] {"officer", "rankup"}, "", "Promotes a city member to Officer.")
+		);
+		subcommands.add(
+				new CityDemoteCommand(pl, "demote", new String[] {"derank", "rankdown"}, "", "Demotes a city Officer.")
 		);
 		
 		pl.getCommand("city").setExecutor(new BaseCommand(pl, subcommands, cityInfoCommand));

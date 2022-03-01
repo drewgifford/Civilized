@@ -12,9 +12,9 @@ import com.drewgifford.civilized.util.CityManager;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class CreateCityCommand extends CivilizedSubcommand {
+public class CityCreateCommand extends CivilizedSubcommand {
 
-	public CreateCityCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
+	public CityCreateCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
 		super(pl, label, aliases, permission, description);
 	}
 
@@ -35,7 +35,7 @@ public class CreateCityCommand extends CivilizedSubcommand {
 			return false;
 		}
 		
-		String cityName = args[0];
+		String cityName = String.join(" ", args).replace(' ', '_');
 		
 		
 	
@@ -61,11 +61,15 @@ public class CreateCityCommand extends CivilizedSubcommand {
 			
 			City city = new City(p.getUniqueId(), cityName);
 			
+			if(!CityClaimCommand.attemptClaim(p, city)) {
+				return false;
+			}
+			
 			Civilized.cities.add(city);
 			
 			p.sendMessage(ChatColor.GREEN + "You have founded the city " + ChatColor.AQUA + city.getNameWithSpaces() + ChatColor.GREEN + "!");
 			
-			cp.setCity(city);
+			pl.citiesConfiguration.write();
 			
 		}
 		

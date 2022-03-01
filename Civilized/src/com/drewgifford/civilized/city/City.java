@@ -17,9 +17,10 @@ public class City {
 	private List<UUID> officers;
 	private UUID owner;
 	private String name;
+	private String board;
 	
 	private List<Chunk> chunks;
-	private ChunkCoordinates homeChunk;
+	private Chunk homeChunk;
 	private Nation nation;
 	private int playerSlots;
 	
@@ -33,7 +34,9 @@ public class City {
 		this.players = new ArrayList<UUID>();
 		this.officers = new ArrayList<UUID>();
 		
-		this.addMember(owner);
+		
+		this.addPlayer(owner);
+		this.addOfficer(owner);
 		
 		this.chunks = new ArrayList<Chunk>();
 		
@@ -42,6 +45,7 @@ public class City {
 		this.name = name;
 		this.playerSlots = 3;
 		this.maxClaimChunks = 4;
+		this.board = "Change this with /city board <message>";
 	}
 	
 	public UUID getOwner() {
@@ -52,7 +56,7 @@ public class City {
 		return this.players;
 	}
 	public List<UUID> getOfficers() {
-		return this.players;
+		return this.officers;
 	}
 	
 	public List<Chunk> getChunks(){
@@ -82,7 +86,7 @@ public class City {
 		return false;
 	}
 	
-	public ChunkCoordinates getHomeChunk(){
+	public Chunk getHomeChunk(){
 		return this.homeChunk;
 	}
 	
@@ -106,20 +110,35 @@ public class City {
 		return this.getName().replace('_', ' ');
 	}
 	
-	public void setHomeChunk(ChunkCoordinates chunk) {
-		this.homeChunk = chunk;
+	public void setHomeChunk(Chunk homeChun) {
+		this.homeChunk = homeChun;
 	}
 	
-	public void addMember(UUID uuid) {
-		if (!this.getPlayers().contains(uuid)) this.players.add(uuid);
+	public boolean addPlayer(UUID uuid) {
+		
+		if (!this.getPlayers().contains(uuid)) {
+			if (this.getPlayers().size() >= this.getPlayerSlots()) {
+				return false;
+			}
+			
+			this.players.add(uuid);
+			return true;
+		}
+		return true;
 	}
 	
 	public void addOfficer(UUID uuid) {
 		if (!this.getOfficers().contains(uuid)) this.officers.add(uuid);
+		addPlayer(uuid);
 	}
 	
 	public void removeOfficer(UUID uuid) {
-		this.officers.remove(uuid);
+		this.getOfficers().remove(uuid);
+	}
+	
+	public void removePlayer(UUID uuid) {
+		this.players.remove(uuid);
+		removeOfficer(uuid);
 	}
 	
 	public boolean hasChunk(Chunk chunk) {
@@ -135,6 +154,7 @@ public class City {
 	}
 	
 	public boolean hasOfficerPermission(UUID uuid) {
+		System.out.println(officers);
 		return (this.officers.contains(uuid) || this.owner.equals(uuid));
 	}
 	
@@ -164,7 +184,7 @@ public class City {
 		for (Chunk c : getChunks()) {
 			int delX = Math.abs(c.getX() - chunkX);
 			int delZ = Math.abs(c.getZ() - chunkZ);
-			if ((delX == 0) ^ (delZ == 0)) {
+			if ((delX == 0) ^ (delZ == 0) && ((delX == 1) || (delZ == 1))) {
 				return true;
 			}
 		}
@@ -189,9 +209,8 @@ public class City {
 					
 					System.out.println("Checking " + c.getX() + "," + c.getZ());
 					
-					System.out.println("Contains? " + updatedChunks + updatedChunks.contains(c));
-					
 					if (updatedChunks.contains(c)) {
+						System.out.println("Found chunk " + c.getX() + "," + c.getZ());
 						checkedChunks = checkAdjacentChunks(c, updatedChunks, checkedChunks);
 						toBreak = true;
 						break;
@@ -208,21 +227,49 @@ public class City {
 	}
 	
 	private List<Chunk> checkAdjacentChunks(Chunk chunk, List<Chunk> validChunks, List<Chunk> checkedChunks) {
-		System.out.println("Checking " + chunk.getX() + "," + chunk.getZ() + " (Total size: " + checkedChunks.size() + "/" + validChunks.size() + ")");
+
 		World w = chunk.getWorld();
 		for (int x = -1; x <= 1; x++) {
 			for (int z = -1; z <= 1; z++) {
-				if (Math.abs(z) != Math.abs(x) && (z != 0 && x != 0)) {
+				if ( (x == 0) ^ (z == 0) ) {
 					Chunk c = w.getChunkAt(chunk.getX() + x, chunk.getZ() + z);
+					
+					System.out.println("[" + c.getX() + "," + c.getZ() + "]");
+					
 					if (!checkedChunks.contains(c) && validChunks.contains(c)) {
+						System.out.println("Valid");
 						checkedChunks.add(c);
-						checkAdjacentChunks(c, validChunks, checkedChunks);
+						checkedChunks = checkAdjacentChunks(c, validChunks, checkedChunks);
 					}
 					
 				}
 			}
 		}
 		return checkedChunks;
+	}
+
+	public String getBoard() {
+		return this.board;
+	}
+
+	public void setBoard(String board) {
+		this.board = board;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setChunks(List<Chunk> chunks) {
+		this.chunks = chunks;
+	}
+
+	public void setPlayers(List<UUID> players) {
+		this.players = players;
+	}
+
+	public void setOfficers(List<UUID> officers) {
+		this.officers = officers;
 	}
 
 }

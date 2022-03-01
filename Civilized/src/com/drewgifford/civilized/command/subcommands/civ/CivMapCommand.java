@@ -1,6 +1,7 @@
 package com.drewgifford.civilized.command.subcommands.civ;
 
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -29,6 +30,7 @@ public class CivMapCommand extends CivilizedSubcommand {
 		
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("on")) {
+				sendMapUpdate(p);
 				p.sendMessage(ChatColor.GREEN + "Automatic map updates enabled. Type /civ map off to disable.");
 				Civilized.activeMaps.add(p.getUniqueId());
 			}
@@ -36,18 +38,26 @@ public class CivMapCommand extends CivilizedSubcommand {
 				p.sendMessage(ChatColor.RED + "Automatic map updates disabled. Type /civ map on to enable.");
 				Civilized.activeMaps.remove(p.getUniqueId());
 			}
+		} else {
+			sendMapUpdate(p);
 		}
 		
-		sendMapUpdate(p);
+		
 		
 		return false;
 	}
 	
 	public static void sendMapUpdate(Player p) {
-		int radius = 10;
-		World world = p.getWorld();
-		Chunk chunk = p.getLocation().getChunk();
+		sendMapUpdate(p, p.getLocation());
+	}
+	
+	public static void sendMapUpdate(Player p, Location loc) {
+		int radius = 7;
+		World world = loc.getWorld();
+		Chunk chunk = loc.getChunk();
 		CivilizedPlayer cp = CivilizedPlayer.getCivilizedPlayer(p);
+		
+		p.sendMessage(ChatColor.AQUA + "Map of nearby cities:");
 		
 		String topBorder = "";
 		for(int x = -radius; x < radius + 1; x++) {
