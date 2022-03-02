@@ -9,6 +9,8 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
+import com.drewgifford.civilized.permissions.ToggleLevel;
+import com.drewgifford.civilized.plot.Plot;
 import com.drewgifford.civilized.util.CityManager;
 
 public class EntitySpawnListener implements Listener {
@@ -27,14 +29,21 @@ public class EntitySpawnListener implements Listener {
 		Location loc = e.getLocation();
 		
 		City city = CityManager.getCityFromLocation(loc);
-		
 		if (city == null) return;
 		
-		// If city has mobs off, don't allow mob spawns
-		if (city.getToggles().mobs == false) { e.setCancelled(true); }
-		
 		Chunk chunk = loc.getChunk();
-		if (city.getChunkPlotMap().get(chunk).getToggles().mobs == false) { e.setCancelled(true); }
+		Plot plot = city.getChunkPlotMap().get(chunk);
+		
+		ToggleLevel level;
+		
+		if (plot.getToggles().mobs == ToggleLevel.DEFAULT) {
+			level = city.getToggles().mobs;
+		}
+		else {
+			level = plot.getToggles().mobs;
+		}
+		
+		if(level == ToggleLevel.DISABLED) e.setCancelled(true);
 		
 		
 		

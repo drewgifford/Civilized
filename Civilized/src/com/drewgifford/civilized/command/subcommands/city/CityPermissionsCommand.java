@@ -62,6 +62,10 @@ public class CityPermissionsCommand extends CivilizedSubcommand {
 		
 		PermissionLevel level = PermissionLevel.fromString(args[1]);
 		
+		if(level == PermissionLevel.DEFAULT) {
+			level = PermissionLevel.MEMBER;
+		}
+		
 		if (level == null) {
 			p.sendMessage(ChatColor.RED + "Invalid role.");
 			p.sendMessage(ChatColor.DARK_RED + "Valid roles: " + PermissionLevel.getOptionsString());

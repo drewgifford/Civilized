@@ -8,6 +8,7 @@ import com.drewgifford.civilized.command.subcommands.HelpCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityBoardCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityClaimCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityDenyCommand;
+import com.drewgifford.civilized.command.subcommands.city.CityDisbandCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityInfoCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityInviteCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityJoinCommand;
@@ -85,6 +86,10 @@ public static void registerCommands(Civilized pl) {
 		
 		subcommands.add(
 				new CityTogglesCommand(pl, "toggle", new String[] {"switch", "options", "set"}, "", "Manages city toggles.")
+		);
+		
+		subcommands.add(
+				new CityDisbandCommand(pl, "disband", new String[] {"delete"}, "", "Disbands your city.")
 		);
 		
 		pl.getCommand("city").setExecutor(new BaseCommand(pl, subcommands, cityInfoCommand));

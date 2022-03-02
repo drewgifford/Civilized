@@ -14,6 +14,16 @@ public class Nation {
 	public Nation(List<City> cities, City capital) {
 		this.cities = cities;
 		this.capital = capital;
+		this.allies = new ArrayList<Nation>();
+	}
+	
+	private List<Nation> allies;
+	
+	public List<Nation> getAllies(){
+		return this.allies;
+	}
+	public void setAllies(List<Nation> allies) {
+		this.allies = allies;
 	}
 	
 	public UUID getOwner() {

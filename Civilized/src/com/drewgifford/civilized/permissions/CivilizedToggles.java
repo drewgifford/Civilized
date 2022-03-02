@@ -10,13 +10,20 @@ import org.bukkit.entity.Player;
 
 public class CivilizedToggles {
 	
-	public boolean pvp, explosion, fire, mobs;
+	public ToggleLevel pvp, explosion, fire, mobs;
 	
 	public CivilizedToggles() {
-		this.pvp = true;
-		this.explosion = false;
-		this.fire = false;
-		this.mobs = false;
+		this.pvp = ToggleLevel.DISABLED;
+		this.explosion = ToggleLevel.DISABLED;
+		this.fire = ToggleLevel.DISABLED;
+		this.mobs = ToggleLevel.DISABLED;
+	}
+	
+	public CivilizedToggles(ToggleLevel defaultOption) {
+		this.pvp = defaultOption;
+		this.explosion = defaultOption;
+		this.fire = defaultOption;
+		this.mobs = defaultOption;
 	}
 	
 	private static List<String> valid = Arrays.asList(
@@ -30,7 +37,7 @@ public class CivilizedToggles {
 		return String.join(", ", valid);
 	}
 	
-	public void setOption(String option, boolean level) {
+	public void setOption(String option, ToggleLevel level) {
 		switch(option.toUpperCase()) {
 			case "PVP":
 				this.pvp = level;
@@ -51,12 +58,12 @@ public class CivilizedToggles {
 	
 	public void sendOptionValues(Player p) {
 		for(String s : valid) {
-			boolean option = getOption(s);
-			p.sendMessage(ChatColor.AQUA + s + ": " + ChatColor.DARK_AQUA + option);
+			ToggleLevel option = getOption(s);
+			p.sendMessage(ChatColor.AQUA + s + ": " + ChatColor.DARK_AQUA + option.toString().toLowerCase());
 		}
 	}
 	
-	public boolean getOption(String option) {
+	public ToggleLevel getOption(String option) {
 		switch(option.toUpperCase()) {
 			case "PVP":
 				return this.pvp;
@@ -67,27 +74,27 @@ public class CivilizedToggles {
 			case "MOBS":
 				return this.mobs;
 			default:
-				return false;
+				return ToggleLevel.DISABLED;
 		}
 	}
 	
 	public Map<?, ?> toMap(){
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		map.put("pvp", this.pvp);
-		map.put("explosion", this.explosion);
-		map.put("fire", this.fire);
-		map.put("mobs", this.mobs);
+		map.put("pvp", this.pvp.toString());
+		map.put("explosion", this.explosion.toString());
+		map.put("fire", this.fire.toString());
+		map.put("mobs", this.mobs.toString());
 		return map;
 	}
 	
 	public static CivilizedToggles fromMap(Map<?, ?> map) {
 		CivilizedToggles toggles = new CivilizedToggles();
 		
-		toggles.pvp = (boolean) map.get("pvp");
-		toggles.explosion = (boolean) map.get("explosion");
-		toggles.fire = (boolean) map.get("fire");
-		toggles.mobs = (boolean) map.get("mobs");
+		toggles.pvp = ToggleLevel.valueOf((String) map.get("pvp"));
+		toggles.explosion = ToggleLevel.valueOf((String) map.get("explosion"));
+		toggles.fire = ToggleLevel.valueOf((String) map.get("fire"));
+		toggles.mobs = ToggleLevel.valueOf((String) map.get("mobs"));
 		
 		return toggles;
 	}

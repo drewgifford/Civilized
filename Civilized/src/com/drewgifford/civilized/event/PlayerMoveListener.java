@@ -3,6 +3,7 @@ package com.drewgifford.civilized.event;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -16,6 +17,8 @@ import com.drewgifford.civilized.command.subcommands.civ.CivMapCommand;
 import com.drewgifford.civilized.plot.Plot;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class PlayerMoveListener implements Listener {
 	
@@ -64,6 +67,10 @@ public class PlayerMoveListener implements Listener {
 				
 				changeCity(p, currentCity);
 			}
+			if (lastPlot.get(uuid) != currentPlot) {
+				lastPlot.put(uuid, currentPlot);
+				changePlot(p, currentPlot);
+			}
 		}
 		
 	}
@@ -85,6 +92,29 @@ public class PlayerMoveListener implements Listener {
 			20,
 			5
 		);
+	}
+	
+	private void changePlot(Player p, Plot plot) {
+		
+		if(plot == null) return;
+		
+		UUID owner = plot.getOwner();
+		boolean forSale = plot.isForSale();
+		
+		if(owner == null && !forSale) {
+			return;
+		}
+		String ownerName = "Unowned";
+		if (owner != null) {
+			ownerName = Bukkit.getOfflinePlayer(owner).getName() + "'s plot";
+		}
+		String forSaleText = ChatColor.GOLD + "";
+		
+		if (forSale) {
+			forSaleText += "FOR SALE: " + pl.getEconomy().format(plot.getPrice());
+		}
+		
+		p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.GREEN + ownerName + " " + forSaleText));
 	}
 
 }

@@ -7,6 +7,7 @@ import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.command.subcommands.*;
 import com.drewgifford.civilized.command.subcommands.city.CityDenyCommand;
 import com.drewgifford.civilized.command.subcommands.civ.CivMapCommand;
+import com.drewgifford.civilized.command.subcommands.civ.CivReloadCommand;
 
 public class CivCommand {
 	
@@ -22,6 +23,10 @@ public class CivCommand {
 		
 		subcommands.add(
 				new CivMapCommand(pl, "map", new String[] {}, "", "Shows a map of surrounding cities.")
+		);
+		
+		subcommands.add(
+				new CivReloadCommand(pl, "reload", new String[] {}, "", "Reloads configuration files.")
 		);
 		
 		pl.getCommand("civ").setExecutor(new BaseCommand(pl, subcommands, helpCommand));

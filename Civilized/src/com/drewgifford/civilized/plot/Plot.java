@@ -13,6 +13,7 @@ import com.drewgifford.civilized.config.CitiesConfiguration;
 import com.drewgifford.civilized.permissions.CivilizedPermissions;
 import com.drewgifford.civilized.permissions.CivilizedToggles;
 import com.drewgifford.civilized.permissions.PermissionLevel;
+import com.drewgifford.civilized.permissions.ToggleLevel;
 import com.drewgifford.civilized.util.CityManager;
 
 public class Plot {
@@ -32,8 +33,8 @@ public class Plot {
 		this.chunk = chunk;
 		
 		this.trusted = new ArrayList<UUID>();
-		this.permissions = new CivilizedPermissions(PermissionLevel.MEMBER);
-		this.toggles = new CivilizedToggles();
+		this.permissions = new CivilizedPermissions(PermissionLevel.DEFAULT);
+		this.toggles = new CivilizedToggles(ToggleLevel.DEFAULT);
 		this.forSale = false;
 		this.price = 0.0;
 		this.name = "";

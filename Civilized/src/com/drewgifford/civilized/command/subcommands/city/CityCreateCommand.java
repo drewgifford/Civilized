@@ -57,6 +57,11 @@ public class CityCreateCommand extends CivilizedSubcommand {
 			return false;
 		}
 		
+		if (CityManager.nameExists(cityName)) {
+			p.sendMessage(ChatColor.RED + "A city with that name already exists.");
+			return false;
+		}
+		
 		else {
 			
 			City city = new City(p.getUniqueId(), cityName);

@@ -10,6 +10,7 @@ import com.drewgifford.civilized.command.CivilizedSubcommand;
 import com.drewgifford.civilized.permissions.CivilizedPermissions;
 import com.drewgifford.civilized.permissions.CivilizedToggles;
 import com.drewgifford.civilized.permissions.PermissionLevel;
+import com.drewgifford.civilized.permissions.ToggleLevel;
 import com.drewgifford.civilized.player.CivilizedPlayer;
 
 import net.md_5.bungee.api.ChatColor;
@@ -55,11 +56,11 @@ public class CityTogglesCommand extends CivilizedSubcommand {
 			return false;
 		}
 		
-		boolean current = city.getToggles().getOption(args[0]);
-		boolean setTo = false;
+		ToggleLevel current = city.getToggles().getOption(args[0]);
+		ToggleLevel setTo = ToggleLevel.DISABLED;
 		
 		if (args.length < 2) {
-			setTo = !current;
+			setTo = ToggleLevel.opposite(current);
 		}
 		else {
 			
@@ -69,18 +70,18 @@ public class CityTogglesCommand extends CivilizedSubcommand {
 				case "Y":
 				case "ENABLED":
 				case "T":
-					setTo = true;
+					setTo = ToggleLevel.ENABLED;
 					break;
 				case "NO":
 				case "FALSE":
 				case "N":
 				case "DISABLED":
 				case "F":
-					setTo = false;
+					setTo = ToggleLevel.DISABLED;
 					break;
 				case "TOGGLE":
 				case "OPPOSITE":
-					setTo = !current;
+					setTo = ToggleLevel.opposite(current);
 					break;
 				default:
 					p.sendMessage(ChatColor.RED + "Invalid toggle option, it must be set to TRUE or FALSE.");
@@ -93,7 +94,7 @@ public class CityTogglesCommand extends CivilizedSubcommand {
 		
 		city.getToggles().setOption(args[0], setTo);
 		
-		p.sendMessage(ChatColor.GREEN + "Set city toggle " + ChatColor.AQUA + args[0].toUpperCase() + ChatColor.GREEN + " to " + ChatColor.AQUA + setTo);
+		p.sendMessage(ChatColor.GREEN + "Set city toggle " + ChatColor.AQUA + args[0].toUpperCase() + ChatColor.GREEN + " to " + ChatColor.AQUA + setTo.toString().toLowerCase());
 		
 		return false;
 	}

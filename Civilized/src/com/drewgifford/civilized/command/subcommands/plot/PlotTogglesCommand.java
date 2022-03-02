@@ -10,6 +10,7 @@ import com.drewgifford.civilized.command.CivilizedSubcommand;
 import com.drewgifford.civilized.permissions.CivilizedPermissions;
 import com.drewgifford.civilized.permissions.CivilizedToggles;
 import com.drewgifford.civilized.permissions.PermissionLevel;
+import com.drewgifford.civilized.permissions.ToggleLevel;
 import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.plot.Plot;
 import com.drewgifford.civilized.util.CityManager;
@@ -60,11 +61,11 @@ public class PlotTogglesCommand extends CivilizedSubcommand {
 			return false;
 		}
 		
-		boolean current = plot.getToggles().getOption(args[0]);
-		boolean setTo = false;
+		ToggleLevel current = plot.getToggles().getOption(args[0]);
+		ToggleLevel setTo = ToggleLevel.DISABLED;
 		
 		if (args.length < 2) {
-			setTo = !current;
+			setTo = ToggleLevel.opposite(current);
 		}
 		else {
 			
@@ -74,18 +75,22 @@ public class PlotTogglesCommand extends CivilizedSubcommand {
 				case "Y":
 				case "ENABLED":
 				case "T":
-					setTo = true;
+					setTo = ToggleLevel.ENABLED;
 					break;
 				case "NO":
 				case "FALSE":
 				case "N":
 				case "DISABLED":
 				case "F":
-					setTo = false;
+					setTo = ToggleLevel.DISABLED;
 					break;
 				case "TOGGLE":
 				case "OPPOSITE":
-					setTo = !current;
+					setTo = ToggleLevel.opposite(current);
+					break;
+				case "DEFAULT":
+				case "CITY":
+					setTo = ToggleLevel.DEFAULT;
 					break;
 				default:
 					p.sendMessage(ChatColor.RED + "Invalid toggle option, it must be set to TRUE or FALSE.");
@@ -98,7 +103,7 @@ public class PlotTogglesCommand extends CivilizedSubcommand {
 		
 		plot.getToggles().setOption(args[0], setTo);
 		
-		p.sendMessage(ChatColor.GREEN + "Set plot toggle " + ChatColor.AQUA + args[0].toUpperCase() + ChatColor.GREEN + " to " + ChatColor.AQUA + setTo);
+		p.sendMessage(ChatColor.GREEN + "Set plot toggle " + ChatColor.AQUA + args[0].toUpperCase() + ChatColor.GREEN + " to " + ChatColor.AQUA + setTo.toString().toLowerCase());
 		
 		return false;
 	}

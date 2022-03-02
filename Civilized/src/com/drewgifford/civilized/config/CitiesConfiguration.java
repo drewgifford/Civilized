@@ -24,6 +24,7 @@ import com.drewgifford.civilized.permissions.CivilizedToggles;
 import com.drewgifford.civilized.permissions.PermissionLevel;
 import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.plot.Plot;
+import com.drewgifford.civilized.requests.CityInvite;
 
 public class CitiesConfiguration {
 	
@@ -41,8 +42,6 @@ public class CitiesConfiguration {
 		}
 		
 		System.out.println("Loading configuration...");
-		
-		this.config = YamlConfiguration.loadConfiguration(this.file);
 		
 		Bukkit.getScheduler().scheduleAsyncRepeatingTask(this.pl, new BukkitRunnable() {
 			@Override
@@ -71,11 +70,12 @@ public class CitiesConfiguration {
 	@SuppressWarnings("unchecked")
 	public CitiesConfiguration load() {
 		
+		this.config = YamlConfiguration.loadConfiguration(this.file);
+		
 		List<Map<?, ?>> citiesYml = config.getMapList("cities");
 		
-		Map<UUID, City> playerPrimaryCities = new HashMap<UUID, City>();
-		
-		Civilized.cities = new ArrayList<City>();
+		Civilized.cities.clear();
+		Civilized.cityInvites.clear();
 		
 		for (Map<?, ?> cityYml : citiesYml) {
 			
@@ -143,7 +143,7 @@ public class CitiesConfiguration {
 			
 		}
 		
-		Civilized.registeredPlayers = new ArrayList<CivilizedPlayer>();
+		Civilized.registeredPlayers.clear();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			CivilizedPlayer.registerCivilizedPlayer(p);
 		}

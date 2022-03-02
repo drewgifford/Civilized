@@ -6,22 +6,25 @@ import java.util.List;
 
 public enum PermissionLevel {
 	
-	OUTSIDER("Outsider", "outsider"),
-	ALLY("Ally", "ally"),
-	NATION_MEMBER("Nation_Member", "nationmember"),
-	NATION_OFFICER("Nation_Officer", "nationofficer"),
-	NATION_OWNER("Nation_Owner", "nationowner"),
-	MEMBER("Member", "member"),
-	OFFICER("Officer", "officer"),
-	OWNER("Owner", "owner"),
-	TRUSTED("Trusted", "trusted");
+	OUTSIDER("Outsider", "outsider", 0),
+	ALLY("Ally", "ally", 1),
+	NATION_MEMBER("Nation_Member", "nationmember", 2),
+	MEMBER("Member", "member", 3),
+	TRUSTED("Trusted", "trusted", 4),
+	NATION_OFFICER("Nation_Officer", "nationofficer", 5),
+	NATION_OWNER("Nation_Owner", "nationowner", 6),
+	OFFICER("Officer", "officer", 7),
+	OWNER("Owner", "owner", 8),
+	DEFAULT("Default", "default", 0);
 	
 	private String id;
 	private String label;
+	private int priority;
 
-	PermissionLevel(String label, String id) {
+	PermissionLevel(String label, String id, int priority) {
 		this.label = label;
 		this.id = id;
+		this.priority = priority;
 	}
 	
 	public String getLabel() {
@@ -29,6 +32,9 @@ public enum PermissionLevel {
 	}
 	public String getId() {
 		return this.id;
+	}
+	public int getPriority() {
+		return this.priority;
 	}
 	
 	public static String getOptionsString() {

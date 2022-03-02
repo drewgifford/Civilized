@@ -10,6 +10,7 @@ import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.CivilizedSubcommand;
 import com.drewgifford.civilized.player.CivilizedPlayer;
+import com.drewgifford.civilized.plot.Plot;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -71,12 +72,18 @@ public class CivMapCommand extends CivilizedSubcommand {
 			String line = ChatColor.GRAY + "❙❙";
 			for (int x = -radius; x < radius + 1; x++) {
 				
-				String add = ChatColor.DARK_GRAY + "-";
+				
+				char add_char = '-';
+				ChatColor color = ChatColor.DARK_GRAY;
+				
 				boolean center = false;
 				
 				if (x == 0 && z == 0) center = true;
 				
-				if (center) add = ChatColor.WHITE + "O";
+				if (center) {
+					color = ChatColor.WHITE;
+					add_char = 'O';
+				}
 				
 				boolean foundChunk = false;
 				
@@ -86,13 +93,20 @@ public class CivMapCommand extends CivilizedSubcommand {
 						
 						if(world.getChunkAt(chunk.getX() + x, chunk.getZ() + z).equals(c)) {
 							foundChunk = true;
+							
+							if(!center) add_char = '/';
+							
+							Plot plot = city.getChunkPlotMap().get(c);
+							
+							if(plot.isForSale()) {
+								if(!center) add_char = '$';
+							}
+							
 							if (city.equals(cp.getCity())) {
-								add = ChatColor.GREEN + "/";
-								if (center) add = ChatColor.GREEN + "O";
+								color = ChatColor.GREEN;
 							}
 							else {
-								add = ChatColor.YELLOW + "=";
-								if (center) add = ChatColor.YELLOW + "O";
+								color = ChatColor.YELLOW;
 							}
 							break;
 						}
@@ -102,7 +116,7 @@ public class CivMapCommand extends CivilizedSubcommand {
 					if (foundChunk) break;
 				}
 				
-				line += add;
+				line += color.toString() + add_char;
 			}
 			p.sendMessage(line + ChatColor.GRAY + "❙❙");
 		}

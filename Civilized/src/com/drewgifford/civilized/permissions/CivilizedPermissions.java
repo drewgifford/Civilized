@@ -4,9 +4,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+
+import com.drewgifford.civilized.city.City;
+import com.drewgifford.civilized.plot.Plot;
 
 public class CivilizedPermissions {
 	
@@ -100,6 +107,78 @@ public class CivilizedPermissions {
 		permissions.item_use = PermissionLevel.valueOf((String) map.get("item_use"));
 		
 		return permissions;
+	}
+	
+	public static PermissionLevel determinePriority(PermissionLevel plotPermission, PermissionLevel cityPermission) {
+		PermissionLevel priority;
+		if(plotPermission == PermissionLevel.DEFAULT) {
+			priority = cityPermission;
+		} else {
+			priority = plotPermission;
+		}
+		return priority;
+	}
+	
+	public static boolean hasPermissionInPlot(Player p, PermissionLevel level, PermissionLevel cityLevel, Plot plot) {
+		
+		City city = plot.getCity();
+		Chunk chunk = plot.getChunk();
+		UUID owner = plot.getOwner();
+		List<UUID> trusted = plot.getTrusted();
+		
+		OfflinePlayer ownerPlayer = null;
+		if(owner != null) {
+			ownerPlayer = Bukkit.getOfflinePlayer(owner);
+		}
+		
+		if(owner != null) {
+			if (owner.equals(p.getUniqueId())) return true;
+		}
+		
+		boolean hasPermission = false;
+		
+		for(PermissionLevel l : PermissionLevel.values()) {
+			
+			int priority = l.getPriority();
+			
+			
+			
+			if (cityLevel.getPriority() <= 7) {
+				if (city.getOfficers().contains(p.getUniqueId())) return true;
+			}
+			if (cityLevel.getPriority() == 8) {
+				if(city.getOwner().equals(p.getUniqueId())) return true;
+			}
+			
+			
+			if (priority < level.getPriority()) continue;
+			
+			
+			
+			switch(level) {
+			
+			case OUTSIDER:
+				return true;
+			case MEMBER:
+				if (city.getPlayers().contains(p.getUniqueId())) return true;
+				break;
+			case TRUSTED:
+				// TODO: Add owner's personal trusted check
+				if (trusted.contains(p.getUniqueId())) return true;
+				break;
+			case OFFICER:
+				if (city.getOfficers().contains(p.getUniqueId())) return true;
+				break;
+			case OWNER:
+				if (city.getOfficers().contains(p.getUniqueId()) || plot.getOwner().equals(p.getUniqueId())) return true;
+				break;
+			default:
+				continue;
+		
+			}
+		}
+		return hasPermission;
+		
 	}
 
 }
