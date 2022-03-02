@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 public class CivilizedToggles {
 	
 	public boolean pvp, explosion, fire, mobs;
@@ -46,19 +49,26 @@ public class CivilizedToggles {
 		}
 	}
 	
+	public void sendOptionValues(Player p) {
+		for(String s : valid) {
+			boolean option = getOption(s);
+			p.sendMessage(ChatColor.AQUA + s + ": " + ChatColor.DARK_AQUA + option);
+		}
+	}
+	
 	public boolean getOption(String option) {
 		switch(option.toUpperCase()) {
-		case "PVP":
-			return this.pvp;
-		case "EXPLOSION":
-			return this.explosion;
-		case "FIRE":
-			return this.fire;
-		case "MOBS":
-			return this.mobs;
-		default:
-			return false;
-	}
+			case "PVP":
+				return this.pvp;
+			case "EXPLOSION":
+				return this.explosion;
+			case "FIRE":
+				return this.fire;
+			case "MOBS":
+				return this.mobs;
+			default:
+				return false;
+		}
 	}
 	
 	public Map<?, ?> toMap(){

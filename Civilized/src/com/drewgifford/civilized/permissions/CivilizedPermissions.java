@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 public class CivilizedPermissions {
 	
 	public PermissionLevel block_break;
@@ -53,6 +56,28 @@ public class CivilizedPermissions {
 				break;
 			default:
 				break;
+		}
+	}
+	
+	public PermissionLevel getOption(String option) {
+		switch(option.toUpperCase()) {
+			case "BREAK":
+				return this.block_break;
+			case "PLACE":
+				return this.block_place;
+			case "INTERACT":
+				return this.interact;
+			case "USE":
+				return this.item_use;
+			default:
+				return null;
+		}
+	}
+	
+	public void sendOptionValues(Player p) {
+		for(String s : valid) {
+			PermissionLevel option = getOption(s);
+			p.sendMessage(ChatColor.AQUA + s + ": " + ChatColor.DARK_AQUA + option.toString().toLowerCase());
 		}
 	}
 	

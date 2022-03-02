@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.subcommands.civ.CivMapCommand;
+import com.drewgifford.civilized.plot.Plot;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -22,6 +23,7 @@ public class PlayerMoveListener implements Listener {
 	
 	private HashMap<UUID, Chunk> lastChunks = new HashMap<UUID, Chunk>();
 	private HashMap<UUID, City> lastCities = new HashMap<UUID, City>();
+	private HashMap<UUID, Plot> lastPlot = new HashMap<UUID, Plot>();
 	
 	public PlayerMoveListener(Civilized pl) {
 		this.pl = pl;
@@ -45,12 +47,13 @@ public class PlayerMoveListener implements Listener {
 			
 			// Check if the player entered a city
 			City currentCity = null;
+			Plot currentPlot = null;
 			
 			// Check if the chunk is in a city
 			for (City city : Civilized.cities) {
 				if (city.getChunks().contains(chunk)) {
 					// Inside a city
-					
+					currentPlot = city.getChunkPlotMap().get(chunk);
 					currentCity = city;
 					break;
 				}

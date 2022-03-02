@@ -84,7 +84,7 @@ public static void registerCommands(Civilized pl) {
 		);
 		
 		subcommands.add(
-				new CityTogglesCommand(pl, "toggle", new String[] {"switch", "options"}, "", "Manages city toggles.")
+				new CityTogglesCommand(pl, "toggle", new String[] {"switch", "options", "set"}, "", "Manages city toggles.")
 		);
 		
 		pl.getCommand("city").setExecutor(new BaseCommand(pl, subcommands, cityInfoCommand));

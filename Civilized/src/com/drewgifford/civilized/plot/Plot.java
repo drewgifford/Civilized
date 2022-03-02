@@ -123,7 +123,7 @@ public class Plot {
 		
 		Plot plot = new Plot(chunk);
 		
-		if ((String) map.get("owner") == "null") {
+		if (map.get("owner") == null) {
 			plot.setOwner(null);
 		} else {
 			plot.setOwner(UUID.fromString((String) map.get("owner")));

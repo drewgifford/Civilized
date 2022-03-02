@@ -13,13 +13,16 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.CityCommand;
 import com.drewgifford.civilized.command.CivCommand;
+import com.drewgifford.civilized.command.PlotCommand;
 import com.drewgifford.civilized.config.CitiesConfiguration;
+import com.drewgifford.civilized.event.EntitySpawnListener;
 import com.drewgifford.civilized.event.InventoryClickListener;
 import com.drewgifford.civilized.event.PlayerJoinListener;
 import com.drewgifford.civilized.event.PlayerMoveListener;
 import com.drewgifford.civilized.event.WorldSaveListener;
 import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.requests.CityInvite;
+import com.drewgifford.civilized.util.MobCleaner;
 
 import net.milkbowl.vault.economy.Economy;
 
@@ -37,7 +40,6 @@ public class Civilized extends JavaPlugin {
 	
 	public CitiesConfiguration citiesConfiguration;
 	
-	@SuppressWarnings("deprecation")
 	public void onEnable() {
 		
 		if (!setupEconomy()) {
@@ -50,6 +52,7 @@ public class Civilized extends JavaPlugin {
 		
 		CivCommand.registerCommands(this);
 		CityCommand.registerCommands(this);
+		PlotCommand.registerCommands(this);
 		
 		PluginManager pm = Bukkit.getServer().getPluginManager();
 		
@@ -57,6 +60,10 @@ public class Civilized extends JavaPlugin {
 		pm.registerEvents(new InventoryClickListener(this), this);
 		pm.registerEvents(new PlayerMoveListener(this), this);
 		pm.registerEvents(new WorldSaveListener(this), this);
+		pm.registerEvents(new EntitySpawnListener(this), this);
+		
+		MobCleaner cleaner = new MobCleaner(this);
+		cleaner.run();
 		
 	}
 	

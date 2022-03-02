@@ -12,3 +12,6 @@ commands:
   city:
     description: Main command for Civilized cities.
     aliases: [town, t, c]
+  plot:
+    description: Main command for plot management.
+    aliases: [p]

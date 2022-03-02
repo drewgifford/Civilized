@@ -1,4 +1,4 @@
-package com.drewgifford.civilized.command.subcommands.city;
+package com.drewgifford.civilized.command.subcommands.plot;
 
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -11,12 +11,14 @@ import com.drewgifford.civilized.permissions.CivilizedPermissions;
 import com.drewgifford.civilized.permissions.CivilizedToggles;
 import com.drewgifford.civilized.permissions.PermissionLevel;
 import com.drewgifford.civilized.player.CivilizedPlayer;
+import com.drewgifford.civilized.plot.Plot;
+import com.drewgifford.civilized.util.CityManager;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class CityTogglesCommand extends CivilizedSubcommand {
+public class PlotTogglesCommand extends CivilizedSubcommand {
 	
-	public CityTogglesCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
+	public PlotTogglesCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
 		super(pl, label, aliases, permission, description);
 	}
 
@@ -29,23 +31,26 @@ public class CityTogglesCommand extends CivilizedSubcommand {
 		}
 		Player p = (Player) sender;
 		CivilizedPlayer cp = CivilizedPlayer.getCivilizedPlayer(p);
+
+		Location location = p.getLocation();
 		
-		if (cp.getCity() == null) {
-			p.sendMessage(ChatColor.RED + "You are not a member of any city.");
+		City city = CityManager.getCityFromLocation(location);
+	
+		if (city == null) {
+			p.sendMessage(ChatColor.RED + "There is no plot at this location.");
 			return false;
 		}
 		
-		//TODO: Check if member has permissions to claim
-		City city = cp.getCity();
+		Plot plot = city.getChunkPlotMap().get(location.getChunk());
 		
 		if (args.length < 1) {
-			p.sendMessage(ChatColor.GREEN + city.getNameWithSpaces() + " Toggles");
-			city.getToggles().sendOptionValues(p);
+			p.sendMessage(ChatColor.GREEN + "Plot Toggles");
+			plot.getToggles().sendOptionValues(p);
 			return false;
 		}
 		
-		if (!city.getOwner().equals(p.getUniqueId())) {
-			p.sendMessage(ChatColor.RED + "You do not have permission within the city to do that.");
+		if (!((plot.getOwner() == null || plot.getOwner().equals(p.getUniqueId())) || city.getOfficers().contains(p.getUniqueId()))) {
+			p.sendMessage(ChatColor.RED + "You must either own the plot or be a city Officer to change plot toggles.");
 			return false;
 		}
 		
@@ -55,7 +60,7 @@ public class CityTogglesCommand extends CivilizedSubcommand {
 			return false;
 		}
 		
-		boolean current = city.getToggles().getOption(args[0]);
+		boolean current = plot.getToggles().getOption(args[0]);
 		boolean setTo = false;
 		
 		if (args.length < 2) {
@@ -91,9 +96,9 @@ public class CityTogglesCommand extends CivilizedSubcommand {
 		}
 		
 		
-		city.getToggles().setOption(args[0], setTo);
+		plot.getToggles().setOption(args[0], setTo);
 		
-		p.sendMessage(ChatColor.GREEN + "Set city toggle " + ChatColor.AQUA + args[0].toUpperCase() + ChatColor.GREEN + " to " + ChatColor.AQUA + setTo);
+		p.sendMessage(ChatColor.GREEN + "Set plot toggle " + ChatColor.AQUA + args[0].toUpperCase() + ChatColor.GREEN + " to " + ChatColor.AQUA + setTo);
 		
 		return false;
 	}

@@ -8,9 +8,9 @@ public enum PermissionLevel {
 	
 	OUTSIDER("Outsider", "outsider"),
 	ALLY("Ally", "ally"),
-	NATION_MEMBER("Nation Member", "nationmember"),
-	NATION_OFFICER("Nation Officer", "nationofficer"),
-	NATION_OWNER("Nation Owner", "nationowner"),
+	NATION_MEMBER("Nation_Member", "nationmember"),
+	NATION_OFFICER("Nation_Officer", "nationofficer"),
+	NATION_OWNER("Nation_Owner", "nationowner"),
 	MEMBER("Member", "member"),
 	OFFICER("Officer", "officer"),
 	OWNER("Owner", "owner"),
