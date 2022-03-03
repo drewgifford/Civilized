@@ -13,6 +13,7 @@ import com.drewgifford.civilized.command.subcommands.city.CityHomeCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityInfoCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityInviteCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityJoinCommand;
+import com.drewgifford.civilized.command.subcommands.city.CityKickCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityLeaveCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityNameCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityPermissionsCommand;
@@ -31,6 +32,7 @@ import com.drewgifford.civilized.command.subcommands.nation.NationHomeCommand;
 import com.drewgifford.civilized.command.subcommands.nation.NationInfoCommand;
 import com.drewgifford.civilized.command.subcommands.nation.NationInviteCommand;
 import com.drewgifford.civilized.command.subcommands.nation.NationJoinCommand;
+import com.drewgifford.civilized.command.subcommands.nation.NationKickCommand;
 import com.drewgifford.civilized.command.subcommands.nation.NationLeaveCommand;
 import com.drewgifford.civilized.command.subcommands.nation.NationNameCommand;
 import com.drewgifford.civilized.command.subcommands.nation.NationPromoteCommand;
@@ -104,6 +106,10 @@ public static void registerCommands(Civilized pl) {
 		
 		subcommands.add(
 				new NationHomeCommand(pl, "home", new String[] {"spawn"}, "", "Teleports to your capital city's home location.")
+		);
+		
+		subcommands.add(
+				new NationKickCommand(pl, "kick", new String[] {"ban"}, "", "Kicks a city from your nation.")
 		);
 		
 		pl.getCommand("nation").setExecutor(new BaseCommand(pl, subcommands, nationInfoCommand));

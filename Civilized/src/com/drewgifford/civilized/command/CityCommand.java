@@ -14,6 +14,7 @@ import com.drewgifford.civilized.command.subcommands.city.CityHomeCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityInfoCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityInviteCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityJoinCommand;
+import com.drewgifford.civilized.command.subcommands.city.CityKickCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityLeaveCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityNameCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityPermissionsCommand;
@@ -110,6 +111,10 @@ public static void registerCommands(Civilized pl) {
 		
 		subcommands.add(
 				new CityWithdrawCommand(pl, "withdraw", new String[] {"takemoney"}, "", "Withdraws money from your city bank.")
+		);
+		
+		subcommands.add(
+				new CityKickCommand(pl, "kick", new String[] {"ban"}, "", "Kicks a user from your city.")
 		);
 		
 		pl.getCommand("city").setExecutor(new BaseCommand(pl, subcommands, cityInfoCommand));

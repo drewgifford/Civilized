@@ -14,6 +14,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.drewgifford.civilized.city.City;
+import com.drewgifford.civilized.command.subcommands.civ.CivBypassCommand;
 import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.plot.Plot;
 
@@ -129,6 +130,10 @@ public class CivilizedPermissions {
 	}
 	
 	public static boolean hasPermissionInPlot(Player p, PermissionLevel level, PermissionLevel cityLevel, Plot plot) {
+		
+		if (CivBypassCommand.bypassing.contains(p.getUniqueId())) {
+			return true;
+		}
 		
 		City city = plot.getCity();
 		Chunk chunk = plot.getChunk();

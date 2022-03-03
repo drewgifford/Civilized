@@ -6,6 +6,7 @@ import java.util.List;
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.command.subcommands.*;
 import com.drewgifford.civilized.command.subcommands.city.CityDenyCommand;
+import com.drewgifford.civilized.command.subcommands.civ.CivBypassCommand;
 import com.drewgifford.civilized.command.subcommands.civ.CivMapCommand;
 import com.drewgifford.civilized.command.subcommands.civ.CivReloadCommand;
 import com.drewgifford.civilized.command.subcommands.civ.CivTrustCommand;
@@ -42,6 +43,10 @@ public class CivCommand {
 		
 		subcommands.add(
 				new CivTrustedCommand(pl, "trusted", new String[] {"friends", "trustlist", "friendlist"}, "", "Lists all of your trusted players.")
+		);
+		
+		subcommands.add(
+				new CivBypassCommand(pl, "bypass", new String[] {"override"}, "", "Bypasses claim permissions.")
 		);
 		
 		pl.getCommand("civ").setExecutor(new BaseCommand(pl, subcommands, helpCommand));

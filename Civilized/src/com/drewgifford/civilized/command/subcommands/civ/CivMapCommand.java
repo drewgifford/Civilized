@@ -109,8 +109,15 @@ public class CivMapCommand extends CivilizedSubcommand {
 							if (city.equals(cp.getCity())) {
 								color = ChatColor.GREEN;
 							}
+							else if (city.getNation() != null) {
+								if (city.getNation().equals(cp.getCity().getNation())) {
+									color = ChatColor.DARK_GREEN;
+								} else {
+									color = ChatColor.YELLOW;
+								}
+							}
 							else {
-								color = ChatColor.YELLOW;
+								color = ChatColor.DARK_AQUA;
 							}
 							break;
 						}
