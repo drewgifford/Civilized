@@ -1,4 +1,4 @@
-package com.drewgifford.civilized.command.subcommands.city;
+package com.drewgifford.civilized.command.subcommands.nation;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -6,15 +6,16 @@ import org.bukkit.entity.Player;
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.CivilizedSubcommand;
+import com.drewgifford.civilized.nation.Nation;
 import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.requests.CityInvite;
 import com.drewgifford.civilized.util.CityManager;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class CityLeaveCommand extends CivilizedSubcommand {
+public class NationLeaveCommand extends CivilizedSubcommand {
 	
-	public CityLeaveCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
+	public NationLeaveCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
 		super(pl, label, aliases, permission, description);
 	}
 
@@ -28,21 +29,28 @@ public class CityLeaveCommand extends CivilizedSubcommand {
 		Player p = (Player) sender;
 		CivilizedPlayer cp = CivilizedPlayer.getCivilizedPlayer(p);
 		
-		if (cp.getCity() == null) {
-			p.sendMessage(ChatColor.RED + "You are not a member of any city.");
+		if (cp.getCity() == null || cp.getCity().getNation() == null) {
+			p.sendMessage(ChatColor.RED + "You are not a member of any nation.");
 			return false;
 		}
 		
 		City city = cp.getCity();
+		Nation nation = city.getNation();
 		
-		if (p.getUniqueId().equals(city.getOwner())) {
-			p.sendMessage(ChatColor.RED + "You must disband the city or transfer ownership to leave.");
+		if (!cp.getCity().getOwner().equals(p.getUniqueId())) {
+			p.sendMessage(ChatColor.RED + "You do not have permissions within your town to do that.");
 			return false;
 		}
 		
-		city.removePlayer(p.getUniqueId());
+		if (nation.getCapital().equals(city)) {
+			p.sendMessage(ChatColor.RED + "You cannot leave the nation without transferring the capital.");
+			return false;
+		}
 		
-		p.sendMessage(ChatColor.GREEN + "You have left " + ChatColor.AQUA + city.getNameWithSpaces());
+		
+		city.setNation(null);
+		
+		p.sendMessage(ChatColor.GREEN + "Your town has left " + ChatColor.AQUA + nation.getNameWithSpaces());
 		
 		pl.citiesConfiguration.write();
 		

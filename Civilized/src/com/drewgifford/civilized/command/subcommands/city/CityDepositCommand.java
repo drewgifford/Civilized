@@ -1,11 +1,9 @@
 package com.drewgifford.civilized.command.subcommands.city;
 
-import java.util.UUID;
+import java.util.regex.Pattern;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -13,12 +11,11 @@ import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.CivilizedSubcommand;
 import com.drewgifford.civilized.player.CivilizedPlayer;
-
 import net.md_5.bungee.api.ChatColor;
 
-public class CityPromoteCommand extends CivilizedSubcommand{
+public class CityDepositCommand extends CivilizedSubcommand{
 
-	public CityPromoteCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
+	public CityDepositCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
 		super(pl, label, aliases, permission, description);
 	}
 
@@ -37,50 +34,38 @@ public class CityPromoteCommand extends CivilizedSubcommand{
 			return false;
 		}
 		
-		City city = cp.getCity();
+		//TODO: Check if member has permissions to claim
 		
-		if (!city.getOwner().equals(p.getUniqueId())) {
+		City city = cp.getCity();
+		double balance = pl.getEconomy().getBalance(p);
+		
+		/*if (!city.hasOfficerPermission(p.getUniqueId())) {
 			p.sendMessage(ChatColor.RED + "You do not have permission within the city to do that.");
 			return false;
-		}
+		}*/
 		
 		if (args.length < 1) {
-			p.sendMessage(ChatColor.RED + "You need to provide a user.");
+			p.sendMessage(ChatColor.RED + "You need to provide an amount to deposit.");
 			return false;
 		}
 		
-		OfflinePlayer t = null;
-		
-		for (UUID uuid : city.getPlayers()) {
-			
-			OfflinePlayer target = Bukkit.getOfflinePlayer(uuid);
-			
-			if (target.getName().equalsIgnoreCase(args[0])) {
-				t = target;
-				break;
-			}
-		}
-		
-		if (t == null) {
-			p.sendMessage(ChatColor.RED + args[0] + " is not apart of your town.");
-			return false;
-		}
-	
-		if (t.getUniqueId().equals(p.getUniqueId())) {
-			p.sendMessage(ChatColor.RED + "You cannot promote yourself.");
+		double depositAmount;
+		try {
+			depositAmount = Double.parseDouble(args[0]);
+		} catch (Exception e) {
+			p.sendMessage(ChatColor.RED + "Deposit amount must be a number.");
 			return false;
 		}
 		
-		if (city.getOfficers().contains(t.getUniqueId())) {
-			p.sendMessage(ChatColor.RED + t.getName() + " is already an Officer.");
+		if (balance < depositAmount) {
+			p.sendMessage(ChatColor.RED + "You do not have enough money to deposit that amount. You need " + pl.getEconomy().format(depositAmount-balance) + " more.");
 			return false;
 		}
 		
-		System.out.println(t.getUniqueId());
-	
-		city.addOfficer(t.getUniqueId());
+		pl.getEconomy().withdrawPlayer(p, depositAmount);
+		city.setBalance(city.getBalance() + depositAmount);
 		
-		p.sendMessage(ChatColor.AQUA + t.getName() + ChatColor.GREEN + " has been promoted to " + ChatColor.AQUA + "Officer" + ChatColor.GREEN + ".");
+		p.sendMessage(ChatColor.GREEN + "You deposited " + pl.getEconomy().format(depositAmount) + " into the city bank.");
 		
 		return false;
 	}

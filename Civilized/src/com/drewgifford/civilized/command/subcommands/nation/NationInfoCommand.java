@@ -1,4 +1,4 @@
-package com.drewgifford.civilized.command.subcommands.city;
+package com.drewgifford.civilized.command.subcommands.nation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,14 +12,16 @@ import org.bukkit.entity.Player;
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.CivilizedSubcommand;
+import com.drewgifford.civilized.nation.Nation;
 import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.util.CityManager;
+import com.drewgifford.civilized.util.NationManager;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class CityInfoCommand extends CivilizedSubcommand {
+public class NationInfoCommand extends CivilizedSubcommand {
 
-	public CityInfoCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
+	public NationInfoCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
 		super(pl, label, aliases, permission, description);
 	}
 
@@ -39,28 +41,28 @@ public class CityInfoCommand extends CivilizedSubcommand {
 			
 			City city = cp.getCity();
 			
-			if (city == null) {
+			if (city == null || city.getNation() == null) {
 				
 				//TODO: Update with language file
-				p.sendMessage(ChatColor.RED + "You are not a member of any city.");
+				p.sendMessage(ChatColor.RED + "You are not a member of any nation.");
 				return false;
 			} else {
 				
-				sendCityInformation(p, city);
+				sendNationInformation(p, city.getNation());
 				
 			}
 			
 			
 		} else {
-			City city = CityManager.getCityFromName(args[0]);
-			if (city != null) {
+			Nation nation = NationManager.getNationFromName(args[0]);
+			if (nation != null) {
 				
-				sendCityInformation(p, city);
+				sendNationInformation(p, nation);
 				
 				
 			} else {
 				
-				p.sendMessage(ChatColor.RED + "A city of that name was not found.");
+				p.sendMessage(ChatColor.RED + "A nation of that name was not found.");
 				return false;
 				
 			}
@@ -73,46 +75,44 @@ public class CityInfoCommand extends CivilizedSubcommand {
 		return false;
 	}
 	
-	public void sendCityInformation(Player p, City city) {
-		p.sendMessage(ChatColor.GREEN + "===== The City of " + ChatColor.AQUA + city.getNameWithSpaces() + ChatColor.GREEN + " =====");
+	public void sendNationInformation(Player p, Nation nation) {
+		p.sendMessage(ChatColor.GREEN + "===== The Nation of " + ChatColor.AQUA + nation.getNameWithSpaces() + ChatColor.GREEN + " =====");
 		
-		String ownerName = Bukkit.getOfflinePlayer(city.getOwner()).getName();
+		String ownerName = Bukkit.getOfflinePlayer(nation.getOwner()).getName();
 		
 		// TODO: Create Vault bank
-		String balance = this.pl.getEconomy().format(city.getBalance());
 		
 		List<String> memberNames = new ArrayList<String>();
 		List<String> officerNames = new ArrayList<String>();
 		
-		for (UUID member : city.getPlayers()) {
+		List<String> cityNames = new ArrayList<String>();
+		for (City city : nation.getCities()) {
+			cityNames.add(city.getNameWithSpaces());
+		}
+		
+		
+		for (UUID member : nation.getPlayers()) {
 			String memberName = Bukkit.getOfflinePlayer(member).getName();
 			memberNames.add(memberName);
 			
-			if (city.getOfficers().contains(member)) {
+			if (nation.getOfficers().contains(member)) {
 				officerNames.add(memberName);
 			}
 		}
 		
-		String nation = "N/A";
-		if (city.getNation() != null) {
-			nation = city.getNation().getNameWithSpaces();
-		}
-		
-		Collections.sort(memberNames);
+		Collections.sort(cityNames);
 		Collections.sort(officerNames);
 		
-		String board = city.getBoard();
+		String board = nation.getBoard();
 		
 		
 		// TODO: Change to language file
 		p.sendMessage(ChatColor.GRAY + board);
 		p.sendMessage(ChatColor.AQUA + "Owner: " + ChatColor.DARK_AQUA + ownerName);
-		p.sendMessage(ChatColor.AQUA + "Location: " + ChatColor.DARK_AQUA + city.getHomeString());
-		p.sendMessage(ChatColor.AQUA + "Nation: " + ChatColor.DARK_AQUA + nation);
-		p.sendMessage(ChatColor.AQUA + "Balance: " + ChatColor.DARK_AQUA + balance);
-		p.sendMessage(ChatColor.AQUA + "Chunks: " + ChatColor.DARK_AQUA  + city.getChunks().size() + " of " + city.getMaxClaimChunks());
+		p.sendMessage(ChatColor.AQUA + "Capital: " + ChatColor.DARK_AQUA + nation.getCapital().getNameWithSpaces());
+		p.sendMessage(ChatColor.AQUA + "Cities (" + cityNames.size() + "): " + ChatColor.DARK_AQUA + String.join(", ", cityNames));
 		p.sendMessage(ChatColor.AQUA + "Officers (" + officerNames.size() + "): " + ChatColor.DARK_AQUA + String.join(", ", officerNames));
-		p.sendMessage(ChatColor.AQUA + "Members (" + memberNames.size() + "/" + city.getPlayerSlots() + "): " + ChatColor.DARK_AQUA + String.join(", ", memberNames));
+		p.sendMessage(ChatColor.AQUA + "Members: " + memberNames.size());
 	}
 
 }

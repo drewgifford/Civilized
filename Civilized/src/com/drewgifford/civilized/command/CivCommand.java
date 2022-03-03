@@ -8,6 +8,9 @@ import com.drewgifford.civilized.command.subcommands.*;
 import com.drewgifford.civilized.command.subcommands.city.CityDenyCommand;
 import com.drewgifford.civilized.command.subcommands.civ.CivMapCommand;
 import com.drewgifford.civilized.command.subcommands.civ.CivReloadCommand;
+import com.drewgifford.civilized.command.subcommands.civ.CivTrustCommand;
+import com.drewgifford.civilized.command.subcommands.civ.CivTrustedCommand;
+import com.drewgifford.civilized.command.subcommands.civ.CivUntrustCommand;
 
 public class CivCommand {
 	
@@ -27,6 +30,18 @@ public class CivCommand {
 		
 		subcommands.add(
 				new CivReloadCommand(pl, "reload", new String[] {}, "", "Reloads configuration files.")
+		);
+		
+		subcommands.add(
+				new CivTrustCommand(pl, "trust", new String[] {"friend", "addfriend", "addtrust"}, "", "Allows a player to build in your claimed plots.")
+		);
+		
+		subcommands.add(
+				new CivUntrustCommand(pl, "untrust", new String[] {"unfriend", "removefriend", "removetrust", "revoke"}, "", "Revokes a player's ability to build in your claimed plots.")
+		);
+		
+		subcommands.add(
+				new CivTrustedCommand(pl, "trusted", new String[] {"friends", "trustlist", "friendlist"}, "", "Lists all of your trusted players.")
 		);
 		
 		pl.getCommand("civ").setExecutor(new BaseCommand(pl, subcommands, helpCommand));

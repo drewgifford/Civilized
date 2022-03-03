@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -13,6 +14,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.drewgifford.civilized.city.City;
+import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.plot.Plot;
 
 public class CivilizedPermissions {
@@ -37,7 +39,7 @@ public class CivilizedPermissions {
 	}
 	
 	private static List<String> valid = Arrays.asList(
-			"BREAK", "PLACE", "INTERACT", "USE");
+			"BREAK", "PLACE", "INTERACT", "USE", "ALL");
 	
 	public static boolean isValidString(String string) {
 		return valid.contains(string.toUpperCase());
@@ -60,6 +62,12 @@ public class CivilizedPermissions {
 				break;
 			case "USE":
 				this.item_use = level;
+				break;
+			case "ALL":
+				this.item_use = level;
+				this.interact = level;
+				this.block_break = level;
+				this.block_place = level;
 				break;
 			default:
 				break;
@@ -84,6 +92,7 @@ public class CivilizedPermissions {
 	public void sendOptionValues(Player p) {
 		for(String s : valid) {
 			PermissionLevel option = getOption(s);
+			if (option == null) continue;
 			p.sendMessage(ChatColor.AQUA + s + ": " + ChatColor.DARK_AQUA + option.toString().toLowerCase());
 		}
 	}
@@ -124,14 +133,11 @@ public class CivilizedPermissions {
 		City city = plot.getCity();
 		Chunk chunk = plot.getChunk();
 		UUID owner = plot.getOwner();
-		List<UUID> trusted = plot.getTrusted();
+		Set<UUID> trusted = plot.getTrusted();
 		
 		OfflinePlayer ownerPlayer = null;
 		if(owner != null) {
 			ownerPlayer = Bukkit.getOfflinePlayer(owner);
-		}
-		
-		if(owner != null) {
 			if (owner.equals(p.getUniqueId())) return true;
 		}
 		
@@ -157,23 +163,42 @@ public class CivilizedPermissions {
 			
 			switch(level) {
 			
-			case OUTSIDER:
-				return true;
-			case MEMBER:
-				if (city.getPlayers().contains(p.getUniqueId())) return true;
-				break;
-			case TRUSTED:
-				// TODO: Add owner's personal trusted check
-				if (trusted.contains(p.getUniqueId())) return true;
-				break;
-			case OFFICER:
-				if (city.getOfficers().contains(p.getUniqueId())) return true;
-				break;
-			case OWNER:
-				if (city.getOfficers().contains(p.getUniqueId()) || plot.getOwner().equals(p.getUniqueId())) return true;
-				break;
-			default:
-				continue;
+				case OUTSIDER:
+					return true;
+				case MEMBER:
+					if (city.getPlayers().contains(p.getUniqueId())) return true;
+					break;
+				case TRUSTED:
+
+					if (trusted.contains(p.getUniqueId())) return true;
+					if (owner != null) {
+						CivilizedPlayer cp = CivilizedPlayer.getCivilizedPlayer(owner);
+						if (cp != null) {
+							if (cp.getTrusted().contains(p.getUniqueId())) return true;
+						}
+					}
+					break;	
+				case ALLY:
+					// TODO: Add ally check
+					if (city.getNation() != null && city.getNation().getPlayers().contains(p.getUniqueId())) return true;
+					break;
+				case NATION_MEMBER:
+					if (city.getNation() != null && city.getNation().getPlayers().contains(p.getUniqueId())) return true;
+					break;
+				case NATION_OFFICER:
+					if (city.getNation() != null && (city.getNation().getOfficers().contains(p.getUniqueId()) || city.getNation().getOwner().equals(p.getUniqueId()))) return true;
+					break;
+				case NATION_OWNER:
+					if (city.getNation() != null && city.getNation().getOwner().equals(p.getUniqueId())) return true;
+					break;
+				case OFFICER:
+					if (city.getOfficers().contains(p.getUniqueId())) return true;
+					break;
+				case OWNER:
+					if (city.getOfficers().contains(p.getUniqueId()) || plot.getOwner().equals(p.getUniqueId())) return true;
+					break;
+				default:
+					continue;
 		
 			}
 		}

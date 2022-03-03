@@ -13,7 +13,6 @@ import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.CivilizedSubcommand;
 import com.drewgifford.civilized.player.CivilizedPlayer;
-import com.drewgifford.civilized.util.ChunkCoordinates;
 
 import net.md_5.bungee.api.ChatColor;
 

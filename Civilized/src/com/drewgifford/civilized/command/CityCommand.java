@@ -8,7 +8,9 @@ import com.drewgifford.civilized.command.subcommands.HelpCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityBoardCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityClaimCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityDenyCommand;
+import com.drewgifford.civilized.command.subcommands.city.CityDepositCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityDisbandCommand;
+import com.drewgifford.civilized.command.subcommands.city.CityHomeCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityInfoCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityInviteCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityJoinCommand;
@@ -16,9 +18,11 @@ import com.drewgifford.civilized.command.subcommands.city.CityLeaveCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityNameCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityPermissionsCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityPromoteCommand;
+import com.drewgifford.civilized.command.subcommands.city.CitySethomeCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityShopCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityTogglesCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityUnclaimCommand;
+import com.drewgifford.civilized.command.subcommands.city.CityWithdrawCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityCreateCommand;
 import com.drewgifford.civilized.command.subcommands.city.CityDemoteCommand;
 
@@ -90,6 +94,22 @@ public static void registerCommands(Civilized pl) {
 		
 		subcommands.add(
 				new CityDisbandCommand(pl, "disband", new String[] {"delete"}, "", "Disbands your city.")
+		);
+		
+		subcommands.add(
+				new CitySethomeCommand(pl, "sethome", new String[] {"setspawn"}, "", "Sets your city's home location.")
+		);
+		
+		subcommands.add(
+				new CityHomeCommand(pl, "home", new String[] {"spawn"}, "", "Teleports to your city's home location.")
+		);
+		
+		subcommands.add(
+				new CityDepositCommand(pl, "deposit", new String[] {"pay", "donate", "givemoney"}, "", "Deposits money into your city bank.")
+		);
+		
+		subcommands.add(
+				new CityWithdrawCommand(pl, "withdraw", new String[] {"takemoney"}, "", "Withdraws money from your city bank.")
 		);
 		
 		pl.getCommand("city").setExecutor(new BaseCommand(pl, subcommands, cityInfoCommand));

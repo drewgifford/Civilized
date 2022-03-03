@@ -33,10 +33,10 @@ public class CityJoinCommand extends CivilizedSubcommand {
 			return false;
 		}
 		
-		City targetCity = CityManager.getCityFromName(args[0]);
+		City targetCity = CityManager.getCityFromName(String.join(" ", args));
 		
 		if (targetCity == null) {
-			sender.sendMessage(ChatColor.RED + "City " + args[0] + "not found.");
+			sender.sendMessage(ChatColor.RED + "City " + String.join(" ", args) + "not found.");
 			return false;
 		}
 		

@@ -7,15 +7,15 @@ import java.util.List;
 public enum PermissionLevel {
 	
 	OUTSIDER("Outsider", "outsider", 0),
+	DEFAULT("Default", "default", 0),
 	ALLY("Ally", "ally", 1),
 	NATION_MEMBER("Nation_Member", "nationmember", 2),
 	MEMBER("Member", "member", 3),
-	TRUSTED("Trusted", "trusted", 4),
-	NATION_OFFICER("Nation_Officer", "nationofficer", 5),
-	NATION_OWNER("Nation_Owner", "nationowner", 6),
-	OFFICER("Officer", "officer", 7),
-	OWNER("Owner", "owner", 8),
-	DEFAULT("Default", "default", 0);
+	NATION_OFFICER("Nation_Officer", "nationofficer", 4),
+	NATION_OWNER("Nation_Owner", "nationowner", 5),
+	OFFICER("Officer", "officer", 6),
+	TRUSTED("Trusted", "trusted", 8),
+	OWNER("Owner", "owner", 8);
 	
 	private String id;
 	private String label;

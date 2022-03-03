@@ -1,4 +1,4 @@
-package com.drewgifford.civilized.command.subcommands.city;
+package com.drewgifford.civilized.command.subcommands.nation;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -8,15 +8,17 @@ import org.bukkit.entity.Player;
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.CivilizedSubcommand;
+import com.drewgifford.civilized.nation.Nation;
 import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.util.CityManager;
+import com.drewgifford.civilized.util.NationManager;
 import com.drewgifford.civilized.util.StringManager;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class CityNameCommand extends CivilizedSubcommand{
+public class NationNameCommand extends CivilizedSubcommand{
 
-	public CityNameCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
+	public NationNameCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
 		super(pl, label, aliases, permission, description);
 	}
 
@@ -30,18 +32,17 @@ public class CityNameCommand extends CivilizedSubcommand{
 		Player p = (Player) sender;
 		CivilizedPlayer cp = CivilizedPlayer.getCivilizedPlayer(p);
 		
-		if (cp.getCity() == null) {
-			p.sendMessage(ChatColor.RED + "You are not a member of any city.");
+		if (cp.getCity() == null || cp.getCity().getNation() == null) {
+			p.sendMessage(ChatColor.RED + "You are not a member of any nation.");
 			return false;
 		}
 		
 		//TODO: Check if member has permissions to claim
 		
-		Location location = p.getLocation();
-		City city = cp.getCity();
+		Nation nation = cp.getCity().getNation();
 		
-		if (!city.getOwner().equals(p.getUniqueId())) {
-			p.sendMessage(ChatColor.RED + "You do not have permission within the city to do that.");
+		if (!nation.getOwner().equals(p.getUniqueId())) {
+			p.sendMessage(ChatColor.RED + "You do not have permission within the nation to do that.");
 			return false;
 		}
 		
@@ -54,19 +55,21 @@ public class CityNameCommand extends CivilizedSubcommand{
 		
 		name = name.replace(' ', '_');
 		
-		if (CityManager.nameExists(name)) {
-			p.sendMessage(ChatColor.RED + "A city with that name already exists.");
+		if (NationManager.nameExists(name)) {
+			p.sendMessage(ChatColor.RED + "A nation with that name already exists.");
 			return false;
 		}
 		
 		if (!StringManager.isValidName(name)) {
-			p.sendMessage(ChatColor.RED + "City names must be alphanumeric and 20 characters or less.");
+			p.sendMessage(ChatColor.RED + "Nation names must be alphanumeric and 20 characters or less.");
 			return false;
 		}
 		
-		city.setName(name);
+		nation.setName(name);
 		
-		p.sendMessage(ChatColor.GREEN + "Set your city name to: " + ChatColor.AQUA + city.getNameWithSpaces());
+		p.sendMessage(ChatColor.GREEN + "Set your city name to: " + ChatColor.AQUA + nation.getNameWithSpaces());
+		
+		pl.citiesConfiguration.write();
 		
 		return false;
 	}

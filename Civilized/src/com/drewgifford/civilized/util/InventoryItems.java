@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.drewgifford.civilized.Civilized;
+import com.drewgifford.civilized.config.SettingsConfiguration;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -23,7 +24,7 @@ public class InventoryItems {
 		List<String> lore = new ArrayList<String>();
 		
 		lore.add(ChatColor.AQUA + "Current amount: " + ChatColor.DARK_AQUA + (slots));
-		lore.add(ChatColor.AQUA + "New amount: " + ChatColor.DARK_AQUA + (slots + 1));
+		lore.add(ChatColor.AQUA + "New amount: " + ChatColor.DARK_AQUA + (slots + SettingsConfiguration.PLAYER_SLOT_PURCHASE_SIZE));
 		lore.add(ChatColor.YELLOW + "Cost: " + ChatColor.GOLD + pl.getEconomy().format(cost));
 		
 		meta.setLore(lore);
@@ -43,7 +44,7 @@ public class InventoryItems {
 		List<String> lore = new ArrayList<String>();
 		
 		lore.add(ChatColor.AQUA + "Current amount: " + ChatColor.DARK_AQUA + (chunks));
-		lore.add(ChatColor.AQUA + "New amount: " + ChatColor.DARK_AQUA + (chunks + 8));
+		lore.add(ChatColor.AQUA + "New amount: " + ChatColor.DARK_AQUA + (chunks + SettingsConfiguration.MAXCLAIM_PURCHASE_SIZE));
 		lore.add(ChatColor.YELLOW + "Cost: " + ChatColor.GOLD + pl.getEconomy().format(cost));
 		
 		meta.setLore(lore);

@@ -12,9 +12,9 @@ import com.drewgifford.civilized.player.CivilizedPlayer;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class CityUnclaimCommand extends CivilizedSubcommand {
+public class CitySethomeCommand extends CivilizedSubcommand {
 
-	public CityUnclaimCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
+	public CitySethomeCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
 		super(pl, label, aliases, permission, description);
 	}
 
@@ -51,19 +51,9 @@ public class CityUnclaimCommand extends CivilizedSubcommand {
 		
 		Chunk chunk = location.getChunk();
 		
-		if (city.willChunkDisconnect(chunk) && city.getChunks().size() > 0) {
-			p.sendMessage(ChatColor.RED + "Unclaiming that chunk would make your city disconnected.");
-			return false;
-		}
+		city.setHome(location);
 		
-		if (city.getHomeChunk().equals(chunk)) {
-			p.sendMessage(ChatColor.RED + "You cannot unclaim the chunk your city home is on. Move the city home using /city sethome, then try again.");
-			return false;
-		}
-		
-		city.removeChunk(chunk);
-		
-		p.sendMessage(ChatColor.GREEN + "Your city has unclaimed the chunk at [X:" + chunk.getX() + ", Z:" + chunk.getZ() + "]");
+		p.sendMessage(ChatColor.GREEN + "Your town's has been set at [X:" + location.getBlockX() + ", Y:" + location.getBlockY() + ", Z:" + location.getBlockZ() + "]");
 		
 		
 		return false;

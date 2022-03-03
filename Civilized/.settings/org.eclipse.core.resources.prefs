@@ -1,3 +1,6 @@
 eclipse.preferences.version=1
 encoding//src/com/drewgifford/civilized/command/subcommands/civ/CivMapCommand.java=UTF-8
 encoding//src/com/drewgifford/civilized/command/subcommands/civ/CivReloadCommand.java=UTF-8
+encoding//src/com/drewgifford/civilized/command/subcommands/civ/CivTrustCommand.java=UTF-8
+encoding//src/com/drewgifford/civilized/command/subcommands/civ/CivTrustedCommand.java=UTF-8
+encoding//src/com/drewgifford/civilized/command/subcommands/civ/CivUntrustCommand.java=UTF-8

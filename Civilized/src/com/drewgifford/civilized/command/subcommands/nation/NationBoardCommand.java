@@ -1,4 +1,4 @@
-package com.drewgifford.civilized.command.subcommands.city;
+package com.drewgifford.civilized.command.subcommands.nation;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -8,12 +8,14 @@ import org.bukkit.entity.Player;
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.CivilizedSubcommand;
+import com.drewgifford.civilized.nation.Nation;
 import com.drewgifford.civilized.player.CivilizedPlayer;
+
 import net.md_5.bungee.api.ChatColor;
 
-public class CityBoardCommand extends CivilizedSubcommand{
+public class NationBoardCommand extends CivilizedSubcommand{
 
-	public CityBoardCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
+	public NationBoardCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
 		super(pl, label, aliases, permission, description);
 	}
 
@@ -27,18 +29,16 @@ public class CityBoardCommand extends CivilizedSubcommand{
 		Player p = (Player) sender;
 		CivilizedPlayer cp = CivilizedPlayer.getCivilizedPlayer(p);
 		
-		if (cp.getCity() == null) {
-			p.sendMessage(ChatColor.RED + "You are not a member of any city.");
+		if (cp.getCity() == null || cp.getCity().getNation() == null) {
+			p.sendMessage(ChatColor.RED + "You are not a member of any nation.");
 			return false;
 		}
 		
 		//TODO: Check if member has permissions to claim
+		Nation nation = cp.getCity().getNation();
 		
-		Location location = p.getLocation();
-		City city = cp.getCity();
-		
-		if (!city.hasOfficerPermission(p.getUniqueId())) {
-			p.sendMessage(ChatColor.RED + "You do not have permission within the city to do that.");
+		if (!nation.hasOfficerPermission(p.getUniqueId())) {
+			p.sendMessage(ChatColor.RED + "You do not have permission within the nation to do that.");
 			return false;
 		}
 		
@@ -49,9 +49,9 @@ public class CityBoardCommand extends CivilizedSubcommand{
 		
 		String board = String.join(" ", args);
 		
-		city.setBoard(board);
+		nation.setBoard(board);
 		
-		p.sendMessage(ChatColor.GREEN + "Set your city board to: " + ChatColor.GRAY + board);
+		p.sendMessage(ChatColor.GREEN + "Set your nation board to: " + ChatColor.GRAY + board);
 		
 		return false;
 	}

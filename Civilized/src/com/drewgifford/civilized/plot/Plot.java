@@ -1,9 +1,12 @@
 package com.drewgifford.civilized.plot;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Chunk;
@@ -20,7 +23,7 @@ public class Plot {
 	
 	private Chunk chunk;
 	private UUID owner;
-	private List<UUID> trusted;
+	private Set<UUID> trusted;
 	private CivilizedPermissions permissions;
 	private CivilizedToggles toggles;
 	private String name;
@@ -32,7 +35,7 @@ public class Plot {
 		this.owner = null;
 		this.chunk = chunk;
 		
-		this.trusted = new ArrayList<UUID>();
+		this.trusted = new HashSet<UUID>();
 		this.permissions = new CivilizedPermissions(PermissionLevel.DEFAULT);
 		this.toggles = new CivilizedToggles(ToggleLevel.DEFAULT);
 		this.forSale = false;
@@ -80,10 +83,10 @@ public class Plot {
 		this.toggles = toggles;
 	}
 	
-	public List<UUID> getTrusted(){
+	public Set<UUID> getTrusted(){
 		return this.trusted;
 	}
-	public void setTrusted(List<UUID> trusted) {
+	public void setTrusted(Set<UUID> trusted) {
 		this.trusted = trusted;
 	}
 	
@@ -129,7 +132,7 @@ public class Plot {
 		} else {
 			plot.setOwner(UUID.fromString((String) map.get("owner")));
 		}
-		plot.setTrusted(CitiesConfiguration.stringsToUniqueIds((List<String>) map.get("trusted")));
+		plot.setTrusted(new HashSet<UUID>(CitiesConfiguration.stringsToUniqueIds((Collection<String>) map.get("trusted"))));
 		plot.setPermissions(CivilizedPermissions.fromMap((Map<?, ?>) map.get("permissions")));
 		plot.setToggles(CivilizedToggles.fromMap((Map<?,?>) map.get("toggles")));
 		plot.setForSale((boolean) map.get("forSale"));

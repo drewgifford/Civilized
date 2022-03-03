@@ -102,6 +102,10 @@ public class CivMapCommand extends CivilizedSubcommand {
 								if(!center) add_char = '$';
 							}
 							
+							if(plot.getChunk().equals(city.getHomeChunk())) {
+								if(!center) add_char = 'H';
+							}
+							
 							if (city.equals(cp.getCity())) {
 								color = ChatColor.GREEN;
 							}

@@ -1,0 +1,24 @@
+configVersion: 1
+
+allowHomeTeleport: true
+
+playerSlotPurchaseSize: 1
+maxClaimPurchaseSize: 8
+
+maxClaims:
+  initialAmount: 8
+  price: 0.0
+  purchaseAmount: 8
+  increaseFactor: 1
+  
+playerSlots:
+  initialAmount: 3
+  price: 0.0
+  purchaseAmount: 1
+  increaseFactor: 1
+
+# Set purchase prices
+prices:
+   newCity: 0.0
+   newNation: 0.0
+   claim: 0.0

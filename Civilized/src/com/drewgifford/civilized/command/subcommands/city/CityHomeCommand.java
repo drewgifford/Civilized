@@ -1,20 +1,22 @@
 package com.drewgifford.civilized.command.subcommands.city;
 
+import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.CivilizedSubcommand;
+import com.drewgifford.civilized.config.SettingsConfiguration;
 import com.drewgifford.civilized.player.CivilizedPlayer;
-import com.drewgifford.civilized.requests.CityInvite;
-import com.drewgifford.civilized.util.CityManager;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class CityLeaveCommand extends CivilizedSubcommand {
-	
-	public CityLeaveCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
+public class CityHomeCommand extends CivilizedSubcommand {
+
+	public CityHomeCommand(Civilized pl, String label, String[] aliases, String permission, String description) {
 		super(pl, label, aliases, permission, description);
 	}
 
@@ -35,16 +37,16 @@ public class CityLeaveCommand extends CivilizedSubcommand {
 		
 		City city = cp.getCity();
 		
-		if (p.getUniqueId().equals(city.getOwner())) {
-			p.sendMessage(ChatColor.RED + "You must disband the city or transfer ownership to leave.");
+		boolean canTeleport = SettingsConfiguration.ALLOW_HOME_TELEPORT;
+		
+		if (canTeleport == false) {
+			p.sendMessage(ChatColor.RED + "City teleportation has been disabled.");
 			return false;
 		}
 		
-		city.removePlayer(p.getUniqueId());
+		p.teleport(city.getHome(), TeleportCause.PLUGIN);
+		p.sendMessage(ChatColor.GREEN + "You have been teleported to your city's home.");
 		
-		p.sendMessage(ChatColor.GREEN + "You have left " + ChatColor.AQUA + city.getNameWithSpaces());
-		
-		pl.citiesConfiguration.write();
 		
 		return false;
 	}

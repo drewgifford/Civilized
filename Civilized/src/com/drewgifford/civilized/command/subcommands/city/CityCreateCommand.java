@@ -7,8 +7,10 @@ import org.bukkit.entity.Player;
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.CivilizedSubcommand;
+import com.drewgifford.civilized.config.SettingsConfiguration;
 import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.util.CityManager;
+import com.drewgifford.civilized.util.StringManager;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -62,13 +64,33 @@ public class CityCreateCommand extends CivilizedSubcommand {
 			return false;
 		}
 		
+		if (!StringManager.isValidName(cityName)) {
+			p.sendMessage(ChatColor.RED + "City names must be alphanumeric and 20 characters or less.");
+			return false;
+		}
+		
+		
 		else {
 			
-			City city = new City(p.getUniqueId(), cityName);
+			City city = new City(p.getUniqueId(), cityName, location);
 			
-			if(!CityClaimCommand.attemptClaim(p, city)) {
+			if(!CityClaimCommand.attemptClaim(pl, p, city, 0)) {
+				city = null;
 				return false;
 			}
+			
+			double price = SettingsConfiguration.NEW_CITY_COST;
+			if (price > 0) {
+				// Check bank account
+				double balance = pl.getEconomy().getBalance(p);
+				
+				if (balance < price) {
+					p.sendMessage(ChatColor.RED + "You do not have enough money in the bank. You need " + pl.getEconomy().format(price-balance) + " more.");
+					return false;
+				}
+			}
+			
+			pl.getEconomy().withdrawPlayer(p, price);
 			
 			Civilized.cities.add(city);
 			

@@ -3,13 +3,17 @@ package com.drewgifford.civilized.config;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -19,63 +23,60 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
+import com.drewgifford.civilized.nation.Nation;
 import com.drewgifford.civilized.permissions.CivilizedPermissions;
 import com.drewgifford.civilized.permissions.CivilizedToggles;
 import com.drewgifford.civilized.permissions.PermissionLevel;
 import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.plot.Plot;
 import com.drewgifford.civilized.requests.CityInvite;
+import com.drewgifford.civilized.util.NationManager;
 
-public class CitiesConfiguration {
+public class CitiesConfiguration extends CivilizedConfiguration {
 	
-	private Civilized pl;
-	private File file;
-	private FileConfiguration config;
-	
-	@SuppressWarnings("deprecation")
-	public CitiesConfiguration(Civilized pl) {
-		this.pl = pl;
-		this.file = new File(pl.getDataFolder()+"/cities.yml");
-		
-		if (!this.file.exists()) {
-			this.pl.saveResource("cities.yml", false);
-		}
-		
-		System.out.println("Loading configuration...");
-		
-		Bukkit.getScheduler().scheduleAsyncRepeatingTask(this.pl, new BukkitRunnable() {
-			@Override
-			public void run() {
-				write();
-			}	
-		}, 1200L, 1200L);
-	}
-	
-	public void save() {
-		try {
-			this.config.save(file);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public File getFile() {
-		return this.file;
-	}
-	
-	public FileConfiguration getConfiguration() {
-		return this.config;
+	public CitiesConfiguration(Civilized pl, String fileName, boolean doAutoSave) {
+		super(pl, fileName, doAutoSave);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public CitiesConfiguration load() {
+	@Override
+	public CivilizedConfiguration load() {
 		
 		this.config = YamlConfiguration.loadConfiguration(this.file);
 		
 		List<Map<?, ?>> citiesYml = config.getMapList("cities");
+		List<Map<?, ?>> nationsYml = config.getMapList("nations");
+		List<Map<?, ?>> playersYml = config.getMapList("players");
 		
 		Civilized.cities.clear();
 		Civilized.cityInvites.clear();
+		Civilized.nations.clear();
+		
+		Map<Nation, String> nationCapitalsTemp = new HashMap<Nation, String>();
+		
+		for (Map<?, ?> nationYml : nationsYml) {
+			try {
+				
+				String name = (String) nationYml.get("name");
+				String board = (String) nationYml.get("board");
+				
+				String capital = (String) nationYml.get("capital");
+				
+				Set<UUID> officers = (Set<UUID>) stringsToUniqueIds((List<String>) nationYml.get("officers"));
+				
+				Nation nation = new Nation(new ArrayList<City>(), null, name);
+				nation.setBoard(board);
+				nation.setOfficers(officers);
+				
+				Civilized.nations.add(nation);
+				
+				nationCapitalsTemp.put(nation, capital);
+				
+			} catch (Exception e) {
+				System.out.println("Error loading nation");
+				e.printStackTrace();
+			}
+		}
 		
 		for (Map<?, ?> cityYml : citiesYml) {
 			
@@ -85,10 +86,12 @@ public class CitiesConfiguration {
 				String board = (String) cityYml.get("board");
 				
 				UUID owner = UUID.fromString((String) cityYml.get("owner"));
-				List<UUID> officers = stringsToUniqueIds((List<String>) cityYml.get("officers"));
-				List<UUID> players = stringsToUniqueIds((List<String>) cityYml.get("players"));
+				Set<UUID> officers = new HashSet<UUID>(stringsToUniqueIds((List<String>) cityYml.get("officers")));
+				Set<UUID> players = new HashSet<UUID>(stringsToUniqueIds((List<String>) cityYml.get("players")));
 				
-				Chunk homeChunk = stringToChunk((String) cityYml.get("homeChunk"));
+				String nationName = (String) cityYml.get("nation");
+				
+				Nation nation = NationManager.getNationFromName(nationName);
 				
 				// Loop through chunks and get plot data
 				List<Map<?, ?>> chunkData = (List<Map<?, ?>>) cityYml.get("chunks");
@@ -117,13 +120,17 @@ public class CitiesConfiguration {
 				
 				double balance = (double) cityYml.get("balance");
 				
-				City city = new City(owner, name);
+				Location home = deserializeLocation((Map<?, ?>) cityYml.get("home"));
+				if (home == null) throw new Exception();
+				
+				City city = new City(owner, name, home);
 				
 				city.setOfficers(officers);
 				city.setPlayers(players);
 				city.setChunks(chunksWithPlots);
-				city.setHomeChunk(homeChunk);
+				city.setHome(home);
 				city.setBoard(board);
+				city.setNation(nation);
 				
 				city.setPlayerSlots(playerSlots);
 				city.setMaxClaimChunks(maxClaimChunks);
@@ -134,27 +141,55 @@ public class CitiesConfiguration {
 				
 				Civilized.cities.add(city);
 				
+				if (nationCapitalsTemp.get(nation) != null && nationCapitalsTemp.get(nation).equalsIgnoreCase(name)) {
+					nation.setCapital(city);
+				}
+				
 				
 			
 			} catch (Exception e) {
 				System.out.println("Error loading city");
 				e.printStackTrace();
+				
+				pl.getPluginLoader().disablePlugin(pl);
+				return null;
 			}
 			
 		}
 		
 		Civilized.registeredPlayers.clear();
+		
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			CivilizedPlayer.registerCivilizedPlayer(p);
+		}
+		
+		for (Map<?, ?> playerYml : playersYml) {
+			String u = (String) playerYml.get("uuid");
+			if (u == null) continue;
+			
+			UUID uuid = UUID.fromString(u);
+			
+			Set<UUID> trusted = new HashSet<UUID>();
+			if (playerYml.get("trusted") != null) {
+				trusted = (Set<UUID>) stringsToUniqueIds((Collection<String>) playerYml.get("trusted"));
+			}
+			
+			CivilizedPlayer cp = CivilizedPlayer.getCivilizedPlayer(uuid);
+			if (cp != null) {
+				cp.setTrusted(trusted);
+			}
 		}
 		
 		return this;
 		
 	}
 	
+	@Override
 	public void write() {
 		
 		List<Map<?, ?>> cityData = new ArrayList<Map<?, ?>>();
+		List<Map<?, ?>> nationData = new ArrayList<Map<?, ?>>();
+		List<Map<?, ?>> playerData = new ArrayList<Map<?, ?>>();
 		
 		for (City city : Civilized.cities) {
 			
@@ -164,8 +199,8 @@ public class CitiesConfiguration {
 			cityYml.put("board", city.getBoard());
 			
 			cityYml.put("owner", city.getOwner().toString());
-			cityYml.put("officers", uniqueIdsToStrings(city.getOfficers()));
-			cityYml.put("players", uniqueIdsToStrings(city.getPlayers()));
+			cityYml.put("officers", new ArrayList<String>(uniqueIdsToStrings(city.getOfficers())));
+			cityYml.put("players", new ArrayList<String>(uniqueIdsToStrings(city.getPlayers())));
 			
 			List<Map<?, ?>> chunks = new ArrayList<Map<?, ?>>();
 			
@@ -185,7 +220,8 @@ public class CitiesConfiguration {
 			}
 			
 			cityYml.put("chunks", chunks);
-			cityYml.put("homeChunk", chunkToString(city.getHomeChunk()));
+			
+			cityYml.put("home", serializeLocation(city.getHome()));
 			
 			cityYml.put("permissions", city.getPermissions().toMap());
 			cityYml.put("toggles", city.getToggles().toMap());
@@ -195,28 +231,61 @@ public class CitiesConfiguration {
 			
 			cityYml.put("balance", city.getBalance());
 			
-			
-			
+			if (city.getNation() != null) {
+				cityYml.put("nation", city.getNation().getName());
+			} else {
+				cityYml.put("nation", null);
+			}
 			// Loop through chunks and get plot data
 			
 			cityData.add(cityYml);
 		}
+		
+		
+		for (Nation nation: Civilized.nations) {
+			Map<String, Object> nationYml = new HashMap<String, Object>();
+			
+			nationYml.put("name", nation.getName());
+			nationYml.put("board", nation.getBoard());
+			
+			nationYml.put("officers", new ArrayList<String>(uniqueIdsToStrings(nation.getOfficers())));
+			
+			if (nation.getCapital() != null) {
+				nationYml.put("capital", nation.getCapital().getName());
+			} else {
+				nationYml.put("capital", null);
+			}
+			
+			nationData.add(nationYml);
+		}
+		
+		for (CivilizedPlayer cp : Civilized.registeredPlayers) {
+			Map<String, Object> playerYml = new HashMap<String, Object>();
+			
+			playerYml.put("uuid", cp.getPlayer().getUniqueId().toString());
+			playerYml.put("trusted", new ArrayList<String>(uniqueIdsToStrings(cp.getTrusted())));
+			
+			playerData.add(playerYml);
+		}
+		
+		config.set("players", playerData);
 		config.set("cities", cityData);
+		config.set("nations", nationData);
 		
 		this.save();
 		
 	}
 	
 	
-	public static List<UUID> stringsToUniqueIds(List<String> strings){
-		List<UUID> uuids = new ArrayList<UUID>();
+	public static Collection<UUID> stringsToUniqueIds(Collection<String> strings){
+		Collection<UUID> uuids = new HashSet<UUID>();
 		for(String s : strings) {
 			uuids.add(UUID.fromString(s));
 		}
 		return uuids;
 	}
-	public static List<String> uniqueIdsToStrings(List<UUID> uuids){
-		List<String> strings = new ArrayList<String>();
+	public static Collection<String> uniqueIdsToStrings(Collection<UUID> uuids){
+		Collection<String> strings = new HashSet<String>();
 		for(UUID u : uuids) {
 			strings.add(u.toString());
 		}
@@ -240,8 +309,8 @@ public class CitiesConfiguration {
 		return w.getChunkAt(x, z);
 	}
 	
-	private List<Chunk> chunkStringsToChunkList(List<String> strings){
-		List<Chunk> chunks = new ArrayList<Chunk>();
+	private Collection<Chunk> chunkStringsToChunkList(Collection<String> strings){
+		Collection<Chunk> chunks = new HashSet<Chunk>();
 		for (String s : strings) {
 			// world,x,z
 			Chunk chunk = stringToChunk(s);
@@ -256,14 +325,44 @@ public class CitiesConfiguration {
 		if (chunk == null) return null;
 		return chunk.getWorld().getName() + "," + chunk.getX() + "," + chunk.getZ();
 	}
-	private List<String> chunksToStringList(List<Chunk> chunks){
-		List<String> strings = new ArrayList<String>();
+	private Collection<String> chunksToStringList(Collection<Chunk> chunks){
+		Collection<String> strings = new HashSet<String>();
 		for(Chunk chunk : chunks) {
 			if (chunk != null) {
 				strings.add(chunkToString(chunk));
 			}
 		}
 		return strings;
+	}
+	
+	private Map<?, ?> serializeLocation(Location location){
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("world", location.getWorld().getName());
+		map.put("x", location.getX());
+		map.put("y", location.getY());
+		map.put("z", location.getZ());
+		
+		map.put("pitch", location.getPitch());
+		map.put("yaw", location.getYaw());
+		return map;
+	}
+	
+	private Location deserializeLocation(Map<?, ?> map) {
+		
+		World w = Bukkit.getWorld((String) map.get("world"));
+		
+		if (w == null) return null;
+		
+		double x = Double.parseDouble(map.get("x").toString());
+		double y = Double.parseDouble(map.get("y").toString());
+		double z = Double.parseDouble(map.get("z").toString());
+		
+		float pitch = Float.parseFloat(map.get("pitch").toString());
+		float yaw = Float.parseFloat(map.get("yaw").toString());
+		
+		Location location = new Location(w, x, y, z, yaw, pitch);
+		return location;
 	}
 
 }

@@ -15,3 +15,6 @@ commands:
   plot:
     description: Main command for plot management.
     aliases: [p]
+  nation:
+    description: Main command for nation management.
+    aliases: [nat, n, country, kingdom]

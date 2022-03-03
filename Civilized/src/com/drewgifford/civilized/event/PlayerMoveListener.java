@@ -13,7 +13,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
+import com.drewgifford.civilized.command.subcommands.city.CityClaimCommand;
 import com.drewgifford.civilized.command.subcommands.civ.CivMapCommand;
+import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.plot.Plot;
 
 import net.md_5.bungee.api.ChatColor;
@@ -76,6 +78,13 @@ public class PlayerMoveListener implements Listener {
 	}
 	
 	private void changeChunk(Player p, Location loc) {
+		if (Civilized.activeAutoClaims.contains(p.getUniqueId())) {
+			Chunk chunk = loc.getChunk();
+			if (!CivilizedPlayer.getCivilizedPlayer(p).getCity().getChunks().contains(chunk)) {
+				p.sendMessage(ChatColor.GRAY + "Attempting automatic claim. Type /city claim off to disable.");
+				CityClaimCommand.attemptClaim(pl, p, CivilizedPlayer.getCivilizedPlayer(p).getCity(), 0, loc);
+			}
+		}
 		if (Civilized.activeMaps.contains(p.getUniqueId())) {
 			CivMapCommand.sendMapUpdate(p, loc);
 		}
@@ -101,7 +110,14 @@ public class PlayerMoveListener implements Listener {
 		UUID owner = plot.getOwner();
 		boolean forSale = plot.isForSale();
 		
+		boolean isHome = plot.getCity().getHomeChunk().equals(plot.getChunk());
+		
+		String home = isHome ? (ChatColor.AQUA + "[HOME] ") : "";
+		
 		if(owner == null && !forSale) {
+			if(isHome) {
+				p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(home));
+			}
 			return;
 		}
 		String ownerName = "Unowned";
@@ -114,7 +130,9 @@ public class PlayerMoveListener implements Listener {
 			forSaleText += "FOR SALE: " + pl.getEconomy().format(plot.getPrice());
 		}
 		
-		p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.GREEN + ownerName + " " + forSaleText));
+		
+		
+		p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.GREEN + ownerName + " " + home + forSaleText));
 	}
 
 }

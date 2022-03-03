@@ -1,7 +1,9 @@
 package com.drewgifford.civilized.player;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -27,11 +29,24 @@ public class CivilizedPlayer {
 		return registerCivilizedPlayer(offlinePlayer);
 	}
 	
+	public static CivilizedPlayer getCivilizedPlayer(UUID offlinePlayer) {
+		if (offlinePlayer == null) return null;
+		return getCivilizedPlayer(Bukkit.getOfflinePlayer(offlinePlayer));
+	}
+	
 	private UUID p;
+	private Set<UUID> trusted;
 	
 	public CivilizedPlayer(UUID p) {
 		this.p = p;
-
+		this.trusted = new HashSet<UUID>();
+	}
+	
+	public void setTrusted(Set<UUID> trusted) {
+		this.trusted = trusted;
+	}
+	public Set<UUID> getTrusted(){
+		return this.trusted;
 	}
 	
 	public City getCity() {
@@ -44,9 +59,9 @@ public class CivilizedPlayer {
 		return null;
 	}
 	
-	public List<Plot> getPlots(){
+	public Set<Plot> getPlots(){
 		
-		List<Plot> plots = new ArrayList<Plot>();
+		Set<Plot> plots = new HashSet<Plot>();
 		
 		for (City city : Civilized.cities) {
 			for(Plot plot : city.getPlots()) {

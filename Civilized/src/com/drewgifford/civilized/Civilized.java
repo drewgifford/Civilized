@@ -13,8 +13,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.CityCommand;
 import com.drewgifford.civilized.command.CivCommand;
+import com.drewgifford.civilized.command.NationCommand;
 import com.drewgifford.civilized.command.PlotCommand;
 import com.drewgifford.civilized.config.CitiesConfiguration;
+import com.drewgifford.civilized.config.CivilizedConfiguration;
+import com.drewgifford.civilized.config.MessagesConfiguration;
+import com.drewgifford.civilized.config.SettingsConfiguration;
 import com.drewgifford.civilized.event.BlockBreakListener;
 import com.drewgifford.civilized.event.BlockPlaceListener;
 import com.drewgifford.civilized.event.EntitySpawnListener;
@@ -27,8 +31,10 @@ import com.drewgifford.civilized.event.PlayerDamageListener;
 import com.drewgifford.civilized.event.PlayerJoinListener;
 import com.drewgifford.civilized.event.PlayerMoveListener;
 import com.drewgifford.civilized.event.WorldSaveListener;
+import com.drewgifford.civilized.nation.Nation;
 import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.requests.CityInvite;
+import com.drewgifford.civilized.requests.NationInvite;
 import com.drewgifford.civilized.util.MobCleaner;
 
 import net.milkbowl.vault.economy.Economy;
@@ -36,16 +42,21 @@ import net.milkbowl.vault.economy.Economy;
 public class Civilized extends JavaPlugin {
 	
 	public static List<City> cities = new ArrayList<City>();
+	public static List<Nation> nations = new ArrayList<Nation>();
 	
 	public static List<CivilizedPlayer> registeredPlayers = new ArrayList<CivilizedPlayer>();
 	
 	public static List<CityInvite> cityInvites = new ArrayList<CityInvite>();
+	public static List<NationInvite> nationInvites = new ArrayList<NationInvite>();
 	
 	public static List<UUID> activeMaps = new ArrayList<UUID>();
+	public static List<UUID> activeAutoClaims = new ArrayList<UUID>();
 	
 	private Economy econ;
 	
-	public CitiesConfiguration citiesConfiguration;
+	public CivilizedConfiguration citiesConfiguration;
+	public CivilizedConfiguration settingsConfiguration;
+	public CivilizedConfiguration messagesConfiguration;
 	
 	public void onEnable() {
 		
@@ -55,11 +66,14 @@ public class Civilized extends JavaPlugin {
             return;
         }
 		
-		citiesConfiguration = new CitiesConfiguration(this).load();
+		messagesConfiguration = new MessagesConfiguration(this, "messages.yml", false).load();
+		settingsConfiguration = new SettingsConfiguration(this, "config.yml", false).load();
+		citiesConfiguration = new CitiesConfiguration(this, "cities.yml", true).load();
 		
 		CivCommand.registerCommands(this);
 		CityCommand.registerCommands(this);
 		PlotCommand.registerCommands(this);
+		NationCommand.registerCommands(this);
 		
 		PluginManager pm = Bukkit.getServer().getPluginManager();
 		

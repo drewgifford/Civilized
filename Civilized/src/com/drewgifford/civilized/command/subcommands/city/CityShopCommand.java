@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import com.drewgifford.civilized.Civilized;
 import com.drewgifford.civilized.city.City;
 import com.drewgifford.civilized.command.CivilizedSubcommand;
+import com.drewgifford.civilized.config.SettingsConfiguration;
 import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.util.InventoryItems;
 
@@ -48,6 +49,12 @@ public class CityShopCommand extends CivilizedSubcommand {
 		return false;
 	}
 	
+	public static double calculateScaledCost(int initialAmount, int currentAmount, double pricePer, double factor, int purchaseAmount) {
+		System.out.println("Price per pop: " + pricePer);
+		return pricePer * Math.pow((currentAmount - (initialAmount) + purchaseAmount) / purchaseAmount , factor);
+		
+	}
+	
 	public static void openCityMenu(Civilized pl, City city, Player p) {
 		
 		CivilizedPlayer cp = CivilizedPlayer.getCivilizedPlayer(p);
@@ -55,8 +62,22 @@ public class CityShopCommand extends CivilizedSubcommand {
 		
 		Inventory i = Bukkit.createInventory(null, 27, ChatColor.BOLD + city.getNameWithSpaces() + ChatColor.BOLD + " Menu");
 		
-		int slotsCost = (city.getPlayerSlots() - 2) * 4000;
-		int chunksCost = (city.getMaxClaimChunks()) * 20;
+	
+		
+		double slotsCost = calculateScaledCost(
+				SettingsConfiguration.INITIAL_PLAYER_SLOTS,
+				cp.getCity().getPlayerSlots(),
+				SettingsConfiguration.PRICE_PER_PLAYER_SLOT,
+				SettingsConfiguration.PLAYER_SLOT_PRICE_EXP_FACTOR,
+				SettingsConfiguration.PLAYER_SLOT_PURCHASE_SIZE
+		);
+		double chunksCost = calculateScaledCost(
+				SettingsConfiguration.INITIAL_MAXCLAIMS,
+				cp.getCity().getMaxClaimChunks(),
+				SettingsConfiguration.PRICE_PER_MAXCLAIM,
+				SettingsConfiguration.MAXCLAIM_PRICE_EXP_FACTOR,
+				SettingsConfiguration.MAXCLAIM_PURCHASE_SIZE
+		);
 		
 		ItemStack addSlots = InventoryItems.PLAYER_SLOTS(pl, city.getPlayerSlots(), slotsCost);
 		i.setItem(11, addSlots);

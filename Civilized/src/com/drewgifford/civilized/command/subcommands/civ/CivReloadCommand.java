@@ -26,9 +26,11 @@ public class CivReloadCommand extends CivilizedSubcommand {
 		
 		
 		if (!(sender instanceof Player) || ((Player) sender).isOp()) {
-			
+			pl.citiesConfiguration.write();
 			sender.sendMessage(ChatColor.YELLOW + "Reloading Civilized configuration...");
 			pl.citiesConfiguration.load();
+			pl.settingsConfiguration.load();
+			pl.messagesConfiguration.load();
 			sender.sendMessage(ChatColor.GREEN + "Configuration reloaded!");
 			
 			return false;
