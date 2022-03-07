@@ -8,5 +8,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="C:/Users/Drew/Documents/1.17 Test Server/spigot-1.17.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Drew/Documents/1.17 Test Server/plugins/Vault (1).jar"/>
+	<classpathentry kind="lib" path="C:/Users/Drew/Downloads/worldguard-bukkit-7.0.6-dist.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Drew/Downloads/worldedit-bukkit-7.2.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
