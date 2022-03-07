@@ -19,3 +19,92 @@ commands:
   nation:
     description: Main command for nation management.
     aliases: [nat, n, country, kingdom]
+    
+permissions:
+   civilized.*:
+     children:
+        civilized.bypass:
+           default: op
+        civilized.map:
+           default: true
+        civilized.trust:
+           default: true
+        civilized.untrust:
+           default: true
+        civilized.reload:
+           default: op
+        
+        civilized.nation.*:
+          children:
+            civilized.nation.board:
+              default: true
+            civilized.nation.capital:
+              default: true
+            civilized.nation.create:
+              default: true
+            civilized.nation.demote:
+              default: true
+            civilized.nation.deny:
+              default: true
+            civilized.nation.disband:
+              default: true
+            civilized.nation.home:
+              default: true
+            civilized.nation.info:
+              default: true
+            civilized.nation.invite:
+              default: true
+            civilized.nation.join:
+              default: true
+            civilized.nation.kick:
+              default: true
+            civilized.nation.leave:
+              default: true
+            civilized.nation.name:
+              default: true
+            civilized.nation.promote:
+              default: true
+            
+        
+        civilized.city.*:
+          children:
+            civilized.city.help:
+               default: true
+            civilized.city.invite:
+               default: true
+            civilized.city.leave:
+               default: true
+            civilized.city.join:
+               default: true
+            civilized.city.deny:
+               default: true
+            civilized.city.claim:
+               default: true
+            civilized.city.unclaim:
+               default: true
+            civilized.city.shop:
+               default: true
+            civilized.city.board:
+               default: true
+            civilized.city.name:
+               default: true
+            civilized.city.promote:
+               default: true
+            civilized.city.demote:
+               default: true
+            civilized.city.permission:
+               default: true
+            civilized.city.toggle:
+               default: true
+            civilized.city.disband:
+               default: true
+            civilized.city.sethome:
+               default: true
+            civilized.city.home:
+               default: true
+            civilized.city.deposit:
+               default: true
+            civilized.city.withdraw:
+               default: true
+            civilized.city.kick:
+               default: true
