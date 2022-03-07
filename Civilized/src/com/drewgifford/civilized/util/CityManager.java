@@ -74,4 +74,11 @@ public class CityManager {
 		return false;
 	}
 
+	public static boolean canClaimAt(Chunk chunk) {
+		if (Civilized.worldGuardInterface != null) {
+			return Civilized.worldGuardInterface.canClaimAt(chunk);
+		}
+		return false;
+	}
+
 }

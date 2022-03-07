@@ -36,6 +36,7 @@ import com.drewgifford.civilized.player.CivilizedPlayer;
 import com.drewgifford.civilized.requests.CityInvite;
 import com.drewgifford.civilized.requests.NationInvite;
 import com.drewgifford.civilized.util.MobCleaner;
+import com.drewgifford.civilized.util.WorldGuardInterface;
 
 import net.milkbowl.vault.economy.Economy;
 
@@ -58,7 +59,15 @@ public class Civilized extends JavaPlugin {
 	public CivilizedConfiguration settingsConfiguration;
 	public CivilizedConfiguration messagesConfiguration;
 	
+	public static WorldGuardInterface worldGuardInterface;
+	
 	public void onEnable() {
+		
+		try {
+			worldGuardInterface = new WorldGuardInterface(this);
+		} catch (Exception e) {
+			worldGuardInterface = null;
+		}
 		
 		if (!setupEconomy()) {
             this.getLogger().severe("Disabled due to no Vault dependency found!");

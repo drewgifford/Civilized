@@ -226,6 +226,11 @@ public class CityClaimCommand extends CivilizedSubcommand{
 			}
 		}
 		
+		if (!CityManager.canClaimAt(chunk)) {
+			p.sendMessage(ChatColor.RED + "You cannot claim a chunk there.");
+			return false;
+		}
+		
 		city.addChunk(chunk);
 		
 		return true;

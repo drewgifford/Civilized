@@ -4,6 +4,7 @@ version: 2
 description: Cities, nations, and war (maybe!)
 author: Toadally
 depend: [Vault]
+softdepend: [WorldGuard]
 api-version: 1.17
 commands:
   civ:
